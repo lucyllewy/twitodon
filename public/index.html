@@ -38,7 +38,7 @@
             <p id="mastodonLoginParagraph">Step 2. <span id="mastodonLoginText">Login With Mastodon</span>.</p>
             <p id="mastodonFormParagraph">Enter your Mastodon host's web address:</p>
             <form method="get" id="mastodonForm">
-                <input type="text" placeholder="https://mastodon.social/" id="mastodonHost" />
+                <input type="text" placeholder="https://mastodon.social/" id="mastodonHostField" />
                 <input type="submit" disabled id="loginToMastodon" value="Login" />
             </form>
             <p>Step 3. Download matching users in CSV format to import into your mastodon account. <a style="display: none" id="csvLink" href="/downloadFollowableCSV">Click Here to download the CSV file</a></p>
@@ -48,7 +48,7 @@
                 let twitterMe = {},
                     mastodonMe = {}
 
-                const mastodonHostField = document.getElementById('mastodonHost'),
+                const mastodonHostField = document.getElementById('mastodonHostField'),
                     mastodonLoginButton = document.getElementById('loginToMastodon')
 
                 document.getElementById('mastodonForm').addEventListener('submit', async e => {
