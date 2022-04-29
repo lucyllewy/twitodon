@@ -6,8 +6,10 @@ export const mastodonHostCookieName = 'mastodonHost',
 export async function mastodonLoginUrl(cookie, protocol, hostname, port, pathname, searchParams, requestBody) {
     return new Response(
         JSON.stringify({ mastodonLoginUrl: `${searchParams.get('mastodonHost')}/oauth/authorize?response_type=code&client_id=${mastodon_client_id}&redirect_uri=${protocol}//${hostname}${port ? `:${port}` : ''}/mastodonAuth&scope=read:accounts+read:follows+write:follows` }), {
-        'Content-Type': 'application/json',
-        'Set-Cookie': `mastodonHost=${searchParams.get('mastodonHost')}`,
+        headers: {
+            'Content-Type': 'application/json',
+            'Set-Cookie': `mastodonHost=${searchParams.get('mastodonHost')}`,
+        }
     })
 }
 
