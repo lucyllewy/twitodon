@@ -16,8 +16,8 @@ async function registerMastodonApp(mastodonHost, mastodonDomain, redirectUri) {
     })
     const json = await response.text()
     const {client_id, client_secret} = JSON.parse(json)
-    MASTODON_APPS.put(`client_id:${mastodonDomain}`, client_id)
-    MASTODON_APPS.put(`client_secret:${mastodonDomain}`, client_secret)
+    await MASTODON_APPS.put(`client_id:${mastodonDomain}`, client_id)
+    await MASTODON_APPS.put(`client_secret:${mastodonDomain}`, client_secret)
     return client_id
 }
 
@@ -49,8 +49,8 @@ export async function mastodonAuth(cookie, protocol, hostname, port, pathname, s
     const mastodonDomain = mastodonHost.replace(/^https?:\/\//i, '').replace(/\/.*$/, '')
     const redirectUri = `${protocol}//${hostname}${port ? `:${port}` : ''}/mastodonAuth`
 
-    let client_id = await MASTODON_APPS.get(`client_id:${mastodonDomain}`)
-    let client_secret = await MASTODON_APPS.get(`client_secret:${mastodonDomain}`)
+    const client_id = await MASTODON_APPS.get(`client_id:${mastodonDomain}`)
+    const client_secret = await MASTODON_APPS.get(`client_secret:${mastodonDomain}`)
 
     if (!client_id || !client_secret) {
         throw new Error('Where are my credentials?!')
