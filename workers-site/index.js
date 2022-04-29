@@ -40,11 +40,12 @@ async function handleEvent(event) {
     * by configuring the function `mapRequestToAsset`
     */
     // options.mapRequestToAsset = handlePrefix(/^\/docs/)
-    
+
     try {
         const requestBody = event.request.body
         const requestedUrl = new URL(event.request.url)
-        let {protocol, hostname, port, pathname, searchParams} = requestedUrl
+        let [protocol, hostname, port] = ['https:', 'twitodon.com', '']
+        let {pathname, searchParams} = requestedUrl
         
         if (DEBUG) {
             protocol = 'http:'; hostname = '127.0.0.1'; port = '8787'
