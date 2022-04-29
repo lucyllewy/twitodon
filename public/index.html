@@ -1,0 +1,117 @@
+<!doctype html>
+<html>
+    <head>
+        <link rel="icon" type="image/x-icon" href="favicon.ico">
+        <link href="https://fonts.googleapis.com/css?family=Pacifico&display=swap" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" rel="stylesheet">
+        <style>
+            h1 {
+                font-family: Pacifico, sans-serif;
+                font-size: 4em;
+                color: #3eb5f1;
+                margin: 0;
+            }
+
+            h2 {
+                font-weight: 300;
+                font-family: sans-serif;
+            }
+
+            .centered {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                text-align: center;
+            }
+
+            #ferris {
+                width: 75%;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="centered">
+            <h1>Twitodon</h1>
+            <h2>Find your Twitter friends on Mastodon</h2>
+            <p id="twitterLoginParagraph">Step 1. <a id="twitterLoginLink">Login With Twitter</a>.</p>
+            <p id="mastodonLoginParagraph">Step 2. <span id="mastodonLoginText">Login With Mastodon</span>.</p>
+            <p id="mastodonFormParagraph">Enter your Mastodon host's web address:</p>
+            <form method="get" id="mastodonForm">
+                <input type="text" placeholder="https://mastodon.social/" id="mastodonHost" />
+                <input type="submit" disabled id="loginToMastodon" value="Login" />
+            </form>
+            <p>Step 3. Download matching users in CSV format to import into your mastodon account. <a style="display: none" id="csvLink" href="/downloadFollowableCSV">Click Here to download the CSV file</a></p>
+        </div>
+        <script type="text/javascript">
+            async function onLoad() {
+                let twitterMe = {},
+                    mastodonMe = {}
+
+                const mastodonHostField = document.getElementById('mastodonHost'),
+                    mastodonLoginButton = document.getElementById('loginToMastodon')
+
+                document.getElementById('mastodonForm').addEventListener('submit', async e => {
+                    e.preventDefault()
+                    if (mastodonHostField.value && !mastodonLoginButton.hasAttribute('disabled')) {
+                        const response = await fetch(`mastodonLoginUrl?mastodonHost=${encodeURIComponent(mastodonHostField.value)}`)
+                        const json = await response.json()
+                        window.location.href = json.mastodonLoginUrl
+                    }
+                })
+
+                let twitterToken = document.cookie
+                    ?.split('; ')
+                    ?.find(row => row.startsWith('twitterToken='))
+                    ?.split('=')[1]
+                let mastodonToken = document.cookie
+                    ?.split('; ')
+                    ?.find(row => row.startsWith('mastodonToken='))
+                    ?.split('=')[1]
+
+                if (twitterToken) {
+                    const response = await fetch('twitterMe')
+                    const json = await response.json()
+                    if (json.status === 401) {
+                        twitterToken = null
+                        document.cookie = 'twitterToken='
+                    } else {
+                        twitterMe = json
+                        document.getElementById('twitterLoginParagraph').append(` Done. (Logged in as: @${json.data.username})`)
+                        document.getElementById('twitterLoginLink').style.textDecoration = 'line-through'
+                        document.getElementById('loginToMastodon').removeAttribute('disabled')
+                    }
+                }
+                
+                if (!twitterToken) {
+                    const response = await fetch('twitterLoginUrl')
+                    const json = await response.json()
+                    document
+                        .getElementById('twitterLoginLink')
+                        .setAttribute('href', json.twitterLoginUrl)
+                }
+
+                if (mastodonToken) {
+                    const response = await fetch('mastodonMe')
+                    const json = await response.json()
+                    mastodonMe = json
+                    const mastodonHost = document.cookie
+                        ?.split('; ')
+                        ?.find(row => row.startsWith('mastodonHost='))
+                        ?.split('=')[1]
+                        ?.replace(/^https?:\/\//, '')
+                    document.getElementById('mastodonForm').style.display = 'none'
+                    document.getElementById('mastodonFormParagraph').style.display = 'none'
+                    document.getElementById('mastodonLoginText').style.textDecoration = 'line-through'
+                    document.getElementById('mastodonLoginParagraph').append(` Done. (Logged in as: @${json.username}@${mastodonHost})`)
+                }
+
+                if (mastodonToken && twitterToken) {
+                    await fetch('addOrUpdateTwitterToMastodonMapping')
+                    document.getElementById('csvLink').style.display = "block"
+                }
+            }
+            onLoad()
+        </script>
+    </body>
+</html>
