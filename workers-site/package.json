@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "A template for kick starting a Cloudflare Workers project",
   "main": "index.js",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "dependencies": {
     "@cloudflare/kv-asset-handler": "~0.1.2",
     "cookie": "^0.5.0"
