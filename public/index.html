@@ -101,7 +101,7 @@
                         ?.split('; ')
                         ?.find(row => row.startsWith('mastodonHost='))
                         ?.split('=')[1]
-                        ?.replace(/^https?:\/\//, '')
+                        ?.replace(/^https?:\/\//i, '')
                     document.getElementById('mastodonForm').style.display = 'none'
                     document.getElementById('mastodonFormParagraph').style.display = 'none'
                     document.getElementById('mastodonLoginText').style.textDecoration = 'line-through'

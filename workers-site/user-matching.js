@@ -15,7 +15,7 @@ export async function addOrUpdateTwitterToMastodonMapping(cookie, protocol, host
     const meOnTwitter = await twitterMe(cookie, protocol, hostname, port, pathname, searchParams, requestBody)
     const meOnMastodon = await mastodonMe(cookie, protocol, hostname, port, pathname, searchParams, requestBody)
 
-    await TWITTER_TO_MASTODON_USERMAP.put(meOnTwitter.data.id, `${meOnMastodon.username}@${cookie[mastodonHostCookieName].replace(/^https?:\/\//, '').replace(/\/.*$/, '')}`)
+    await TWITTER_TO_MASTODON_USERMAP.put(meOnTwitter.data.id, `${meOnMastodon.username}@${cookie[mastodonHostCookieName].replace(/^https?:\/\//i, '').replace(/\/.*$/, '')}`)
 }
 
 export async function matchTwitterUsersToMastodon(cookie, protocol, hostname, port, pathname, searchParams, requestBody) {
