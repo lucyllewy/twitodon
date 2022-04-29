@@ -6,6 +6,12 @@
         <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" rel="stylesheet" />
         <style>
+            body {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
             h1 {
                 font-family: Pacifico, sans-serif;
                 font-size: 4em;
@@ -18,11 +24,12 @@
                 font-family: sans-serif;
             }
 
+            div {
+                width: 90vw;
+                max-width: 640px;
+            }
+
             .centered {
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
                 text-align: center;
             }
 
@@ -30,7 +37,7 @@
                 width: 75%;
             }
 
-            .github-fork-ribbon:before { background-color: #hotpink; }
+            .github-fork-ribbon:before { background-color: hotpink; }
         </style>
         <title>Twitodon - Find your Twitter friends on Mastodon</title>
     </head>
@@ -39,6 +46,8 @@
             <h1>Twitodon</h1>
             <h2>Find your Twitter friends on Mastodon</h2>
             <iframe src="https://github.com/sponsors/diddledani/button" title="Sponsor diddledani" height="35" width="116" style="border: 0;"></iframe>
+        </div>
+        <div>
             <p id="twitterLoginParagraph">Step 1. <a id="twitterLoginLink">Login With Twitter</a>.</p>
             <p id="mastodonLoginParagraph">Step 2. <span id="mastodonLoginText">Login With Mastodon</span>.</p>
             <p id="mastodonFormParagraph">Enter your Mastodon host's web address:</p>
@@ -46,7 +55,19 @@
                 <input type="text" placeholder="https://mastodon.social/" id="mastodonHostField" />
                 <input type="submit" disabled id="loginToMastodon" value="Login" />
             </form>
-            <p>Step 3. Download matching users in CSV format to import into your mastodon account. <a style="display: none" id="csvLink" href="/downloadFollowableCSV">Click Here to download the CSV file</a></p>
+            <p>Step 3. Download matching users in CSV format to import into your Mastodon account. <a style="display: none" id="csvLink" href="/downloadFollowableCSV">Click Here to download the CSV file</a></p>
+            <details>
+                <summary>Instructions for importing the CSV into your Mastodon instance</summary>
+                <ol>
+                    <li>
+                        <p>Navigate to your Mastodon instance's import page: <a id="mastodonImportLink" href="https://mastodon.social/settings/import">https://mastodon.social/settings/import</a></p>
+                        <p class="centered"><img src="img/import-screen.png" title="A screenshot showing the import following list for a Mastodon account" /></p>
+                    </li>
+                    <li>Click the browse button and select the file <code>new_mastodon_follows.csv</code>, that you downloaded from Twitodon.</li>
+                    <li>Ensure that "Merge" is selected as the chosen strategy or you'll unfollow anyone that isn't in your CSV file.</li>
+                    <li>Finally click the Upload button. This will upload your CSV and put it into a queue. Your Mastodon server will process it over the next few hours to a couple of days.</li>
+                </ol>
+            </details>
         </div>
 
         <a class="github-fork-ribbon" href="https://github.com/diddledani/twitodon" data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a>
@@ -112,6 +133,10 @@
                     document.getElementById('mastodonFormParagraph').style.display = 'none'
                     document.getElementById('mastodonLoginText').style.textDecoration = 'line-through'
                     document.getElementById('mastodonLoginParagraph').append(` Done. (Logged in as: @${json.username}@${mastodonHost})`)
+
+                    const mastodonImportUrl = `https://${mastodonHost}/settings/import`
+                    document.getElementById('mastodonImportLink').textContent = mastodonImportUrl
+                    document.getElementById('mastodonImportLink').setAttribute('href', mastodonImportUrl)
                 }
 
                 if (mastodonToken && twitterToken) {
