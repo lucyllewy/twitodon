@@ -1,44 +1,50 @@
 import { randomBytes } from 'crypto'
+// import TwitterApi from 'twitter-api-v2';
 
 export const twitterChallengeCookieName = 'twitterChallenge',
             twitterTokenCookieName = 'twitterToken'
 
 export async function twitterLoginUrl(cookie, protocol, hostname, port, pathname, searchParams, requestBody) {
+    const id = randomBytes(20).toString('hex')
     const challenge = randomBytes(20).toString('hex')
-    const redirectUri = `${protocol}//${hostname}${port ? `:${port}` : ''}/twitterAuth`
-    console.dir(client_id)
-    return new Response(JSON.stringify({ twitterLoginUrl: `https://twitter.com/i/oauth2/authorize?response_type=code&client_id=${client_id}&redirect_uri=${redirectUri}&scope=tweet.read%20users.read%20follows.read&state=state&code_challenge=${challenge}&code_challenge_method=plain` }), {
-        headers: {
-            'Content-Type': 'application/json',
-            'Set-Cookie': `${twitterChallengeCookieName}=${challenge}`,
-        },
-    })
+    const CALLBACK_URL = `${protocol}//${hostname}${port ? `:${port}` : ''}/twitterAuth`
+    await TWITTER_USER_TOKENS.put(id, challenge, {expirationTtl: 3600})
+    return new Response(
+        JSON.stringify({
+            sessionId: id,
+            twitterLoginUrl: `https://twitter.com/i/oauth2/authorize?response_type=code&client_id=${client_id}&redirect_uri=${CALLBACK_URL}&scope=tweet.read%20users.read%20follows.read&state=${id}&code_challenge=${challenge}&code_challenge_method=plain`
+        }), {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
 }
 
 export async function twitterAuth(cookie, protocol, hostname, port, pathname, searchParams, requestBody) {
-    if (cookie[twitterChallengeCookieName] == null) {
-        throw new Error('No Twitter Challenge cookie')
-    }
-    const redirectUri = `${protocol}//${hostname}${port ? `:${port}` : ''}/twitterAuth`
-    const body = `code=${encodeURIComponent(searchParams.get('code'))}&` +
-    `grant_type=${encodeURIComponent('authorization_code')}&` +
-    `client_id=${encodeURIComponent(client_id)}&` +
-    `redirect_uri=${encodeURIComponent(redirectUri)}&` +
-    `code_verifier=${encodeURIComponent(cookie[twitterChallengeCookieName])}`
+    const id = searchParams.get('state')
+    const challenge = randomBytes(20).toString('hex')
+    const CALLBACK_URL = `${protocol}//${hostname}${port ? `:${port}` : ''}/twitterAuth`
+    await TWITTER_USER_TOKENS.get(id)
+    const body = `code=${encodeURIComponent(searchParams.get('code'))}` +
+                `&grant_type=${encodeURIComponent('authorization_code')}` +
+                `&client_id=${encodeURIComponent(client_id)}` +
+                `&redirect_uri=${encodeURIComponent(CALLBACK_URL)}` +
+                `&code_verifier=${encodeURIComponent(cookie[twitterChallengeCookieName])}`
     const oauthData = await fetch('https://api.twitter.com/2/oauth2/token', {
         method: 'POST',
+        body,
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body,
     })
     const json = await oauthData.json()
+    const responseHeaders = new Headers({
+        location: `${protocol}//${hostname}${port ? `:${port}` : ''}/`,
+        'Set-Cookie': `${twitterTokenCookieName}=${json.access_token}`,
+    })
     return new Response(null, {
         status: 301,
-        headers: {
-            location: `${protocol}//${hostname}${port ? `:${port}` : ''}/`,
-            'Set-Cookie': `twitterToken=${json.access_token}`,
-        }
+        headers: responseHeaders,
     })
 }
 
