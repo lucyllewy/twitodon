@@ -1,0 +1,21 @@
+name: 🚀 Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy
+    environment: 
+      name: production
+      url: https://twitodon.com
+    steps:
+      - uses: actions/checkout@v3
+      - name: Publish
+        uses: cloudflare/wrangler-action@1.3.0
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          environment: 'production'
