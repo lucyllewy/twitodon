@@ -103,8 +103,20 @@ async function handleEvent(event) {
                 response = new Response(null, {status: 404})
             }
         } else {
-            const page = await getAssetFromKV(event, options)
-            response = new Response(page.body, page)
+            try {
+                const page = await getAssetFromKV(event, options)
+                response = new Response(page.body, page)
+            } catch {
+                try {
+                    let notFoundResponse = await getAssetFromKV(event, {
+                        mapRequestToAsset: req => new Request(`${new URL(req.url).origin}/404.html`, req),
+                    })
+                    
+                    return new Response(notFoundResponse.body, { ...notFoundResponse, status: 404 })
+                } catch (e) {
+                    return new Response(e.message || e.toString(), { status: 500 })
+                }
+            }
         }
         
         response.headers.set('X-XSS-Protection', '1; mode=block')
@@ -116,17 +128,6 @@ async function handleEvent(event) {
         return response
         
     } catch (e) {
-        // if an error is thrown try to serve the asset at 404.html
-        if (!DEBUG) {
-            try {
-                let notFoundResponse = await getAssetFromKV(event, {
-                    mapRequestToAsset: req => new Request(`${new URL(req.url).origin}/404.html`, req),
-                })
-                
-                return new Response(notFoundResponse.body, { ...notFoundResponse, status: 404 })
-            } catch (e) {}
-        }
-        
         return new Response(e.message || e.toString(), { status: 500 })
     }
 }

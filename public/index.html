@@ -170,8 +170,6 @@
                         console.error(e)
                     }
 
-                    console.dir(twitterIds)
-
                     let progress = 1
                     for (const {id} of twitterIds) {
                         try {
@@ -180,7 +178,7 @@
                                 body: id,
                             })
                             if (response.ok) {
-                                const mastodonId = await response.json()
+                                const mastodonId = await response.text()
                                 if (mastodonId) {
                                     mastodonIds.push(mastodonId)
                                 }
@@ -190,8 +188,6 @@
                             matchedMastodonUsers.innerText = mastodonIds.length
                         }
                     }
-
-                    console.dir(mastodonIds)
 
                     const csvContent = 'data:text/csv;charset=utf-8,Account address,Show boosts\n' + mastodonIds.map(user => `${user},true`).join('\n')
                     const csvURI = encodedUri = encodeURI(csvContent);
