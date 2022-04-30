@@ -5,16 +5,16 @@ workers_dev = true
 site = { bucket = "./public" }
 compatibility_date = "2022-04-28"
 
-vars = { ENVIRONMENT = "dev" }
+vars = { ENVIRONMENT = "production" }
+zone_id = "aaf98463fb45282d08b91c8f16461ef3"
+route = "twitodon.com/*"
 kv_namespaces = [
     { binding = "TWITTER_TO_MASTODON_USERMAP", id = "e09c82417eac4f3082e706348f9366fa", preview_id = "33f1370672674c3e9821f80557842f95" },
     { binding = "MASTODON_APPS", id = "28a42b13583e4bd3839ae1cf40e61fc8", preview_id = "da2b65b1ee934f30af1b7555d8ded84e" },
 ]
 
-[env.production]
-vars = { ENVIRONMENT = "production" }
-zone_id = "aaf98463fb45282d08b91c8f16461ef3"
-route = "twitodon.com/*"
+[env.dev]
+vars = { ENVIRONMENT = "dev" }
 kv_namespaces = [
     { binding = "TWITTER_TO_MASTODON_USERMAP", id = "e09c82417eac4f3082e706348f9366fa", preview_id = "33f1370672674c3e9821f80557842f95" },
     { binding = "MASTODON_APPS", id = "28a42b13583e4bd3839ae1cf40e61fc8", preview_id = "da2b65b1ee934f30af1b7555d8ded84e" },
