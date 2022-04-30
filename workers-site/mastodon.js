@@ -98,15 +98,16 @@ export async function mastodonMe(cookie, protocol, hostname, port, pathname, sea
     return await me.json()
 }
 
-export async function downloadFollowableCSV(cookie, protocol, hostname, port, pathname, searchParams, requestBody) {
-    if (cookie[mastodonTokenCookieName] == null) {
-        throw new Error('No Mastodon Authorization Token cookie')
-    }
-    if (cookie[mastodonHostCookieName] == null) {
-        throw new Error('No Mastodon Hostname cookie')
-    }
+// export async function downloadFollowableCSV(cookie, protocol, hostname, port, pathname, searchParams, requestBody) {
+//     if (cookie[mastodonTokenCookieName] == null) {
+//         throw new Error('No Mastodon Authorization Token cookie')
+//     }
+//     if (cookie[mastodonHostCookieName] == null) {
+//         throw new Error('No Mastodon Hostname cookie')
+//     }
 
-    const mastodonUsers = await matchTwitterUsersToMastodon(cookie, protocol, hostname, port, pathname, searchParams, requestBody)
+//     // const mastodonUsers = await matchTwitterUsersToMastodon(cookie, protocol, hostname, port, pathname, searchParams, requestBody)
+//     const mastodonUsers = JSON.parse(requestBody)
 
-    return 'Account address,Show boosts\n' + mastodonUsers.map(user => `${user},true`).join('\n')
-}
+//     return 'Account address,Show boosts\n' + mastodonUsers.map(user => `${user},true`).join('\n')
+// }

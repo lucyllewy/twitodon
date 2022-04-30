@@ -12,11 +12,11 @@ import {
     mastodonLoginUrl,
     mastodonAuth,
     mastodonMe,
-    downloadFollowableCSV,
 } from './mastodon'
 
 import {
     addOrUpdateTwitterToMastodonMapping,
+    matchTwitterUserToMastodon,
 } from './user-matching'
 
 /**
@@ -26,7 +26,7 @@ import {
 * 2. we will return an error message on exception in your Response rather
 *    than the default 404.html page.
 */
-const DEBUG = false
+const DEBUG = true
 
 addEventListener('fetch', event => {
     event.respondWith(handleEvent(event))
@@ -42,14 +42,17 @@ async function handleEvent(event) {
     // options.mapRequestToAsset = handlePrefix(/^\/docs/)
 
     try {
-        const requestBody = event.request.body
+        const requestBody = await event.request.text()
         const requestedUrl = new URL(event.request.url)
-        let [protocol, hostname, port] = ['https:', 'twitodon.com', '']
-        let {pathname, searchParams} = requestedUrl
-        
+        let {protocol, hostname, port, pathname, searchParams} = requestedUrl
+
+        if (ENVIRONMENT === 'dev') {
+            protocol = 'http:'
+            hostname = '127.0.0.1'
+            port = '8787'
+        }
+
         if (DEBUG) {
-            protocol = 'http:'; hostname = '127.0.0.1'; port = '8787'
-            
             // customize caching
             options.cacheControl = {
                 bypassCache: true,
@@ -84,15 +87,21 @@ async function handleEvent(event) {
         } else if (pathname === '/addOrUpdateTwitterToMastodonMapping') {
             await addOrUpdateTwitterToMastodonMapping(cookie, protocol, hostname, port, pathname, searchParams, requestBody)
             response = new Response(null, {status: 200})
-        } else if (pathname === '/downloadFollowableCSV') {
-            const body = await downloadFollowableCSV(cookie, protocol, hostname, port, pathname, searchParams, requestBody)
-            response = new Response(body, {
-                status: 200,
+        } else if (pathname === '/followingOnTwitter') {
+            const json = await followingOnTwitter(cookie, protocol, hostname, port, pathname, searchParams, requestBody)
+            response = new Response(JSON.stringify(json) , {
                 headers: {
-                    'Content-Type': 'text/csv',
-                    'Content-Disposition': 'attachment; filename="new_mastodon_follows.csv"',
+                    'Content-Type': 'application/json',
                 },
             })
+        } else if (pathname === '/matchTwitterUserToMastodon') {
+            const mastodonId = await matchTwitterUserToMastodon(cookie, protocol, hostname, port, pathname, searchParams, requestBody)
+            if (mastodonId) {
+                console.dir(mastodonId)
+                response = new Response(mastodonId)
+            } else {
+                response = new Response(null, {status: 404})
+            }
         } else {
             const page = await getAssetFromKV(event, options)
             response = new Response(page.body, page)

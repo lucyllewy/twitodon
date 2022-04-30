@@ -55,7 +55,12 @@
                 <input type="text" placeholder="https://mastodon.social/" id="mastodonHostField" />
                 <input type="submit" disabled id="loginToMastodon" value="Login" />
             </form>
+            <p>Discovered  followed users on Twitter.</p>
+            <p>Looking for Mastodon users progress, scanned <span id="scanProgressCount">0</span> of <span id="twitterFollowingCount">0</span>. Discovered <span id="matchedMastodonUsers">0</span> Twitter users already on Mastodon.</p>
             <p>Step 3. Download matching users in CSV format to import into your Mastodon account. <a style="display: none" id="csvLink" href="/downloadFollowableCSV">Click Here to download the CSV file</a></p>
+
+            <p>Important information about how your data is handled is available in the <a href="privacy.html">Privacy Policy</a>.</p>
+
             <details>
                 <summary>Instructions for importing the CSV into your Mastodon instance</summary>
                 <ol>
@@ -73,19 +78,23 @@
         <a class="github-fork-ribbon" href="https://github.com/diddledani/twitodon" data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a>
 
         <script type="text/javascript">
+            let twitterMe = {},
+                mastodonMe = {},
+                twitterIds = [],
+                mastodonIds = []
+
+            const mastodonHostField = document.getElementById('mastodonHostField'),
+                mastodonLoginButton = document.getElementById('loginToMastodon')
+
             async function onLoad() {
-                let twitterMe = {},
-                    mastodonMe = {}
-
-                const mastodonHostField = document.getElementById('mastodonHostField'),
-                    mastodonLoginButton = document.getElementById('loginToMastodon')
-
                 document.getElementById('mastodonForm').addEventListener('submit', async e => {
                     e.preventDefault()
                     if (mastodonHostField.value && !mastodonLoginButton.hasAttribute('disabled')) {
                         const response = await fetch(`mastodonLoginUrl?mastodonHost=${encodeURIComponent(mastodonHostField.value)}`)
-                        const json = await response.json()
-                        window.location.href = json.mastodonLoginUrl
+                        if (response.ok) {
+                            const json = await response.json()
+                            window.location.href = json.mastodonLoginUrl
+                        }
                     }
                 })
 
@@ -100,48 +109,97 @@
 
                 if (twitterToken) {
                     const response = await fetch('twitterMe')
-                    const json = await response.json()
-                    if (json.status === 401) {
-                        twitterToken = null
-                        document.cookie = 'twitterToken='
-                    } else {
-                        twitterMe = json
-                        document.getElementById('twitterLoginParagraph').append(` Done. (Logged in as: @${json.data.username})`)
-                        document.getElementById('twitterLoginLink').style.textDecoration = 'line-through'
-                        document.getElementById('loginToMastodon').removeAttribute('disabled')
+                    if (response.ok) {
+                        const json = await response.json()
+                        if (json.status === 401) {
+                            twitterToken = null
+                            document.cookie = 'twitterToken='
+                        } else {
+                            twitterMe = json
+                            document.getElementById('twitterLoginParagraph').append(` Done. (Logged in as: @${json.data.username})`)
+                            document.getElementById('twitterLoginLink').style.textDecoration = 'line-through'
+                            document.getElementById('loginToMastodon').removeAttribute('disabled')
+                        }
                     }
                 }
                 
                 if (!twitterToken) {
                     const response = await fetch('twitterLoginUrl')
-                    const json = await response.json()
-                    document
-                        .getElementById('twitterLoginLink')
-                        .setAttribute('href', json.twitterLoginUrl)
+                    if (response.ok) {
+                        const json = await response.json()
+                        document
+                            .getElementById('twitterLoginLink')
+                            .setAttribute('href', json.twitterLoginUrl)
+                    }
                 }
 
                 if (mastodonToken) {
                     const response = await fetch('mastodonMe')
-                    const json = await response.json()
-                    mastodonMe = json
-                    const mastodonHost = document.cookie
-                        ?.split('; ')
-                        ?.find(row => row.startsWith('mastodonHost='))
-                        ?.split('=')[1]
-                        ?.replace(/^https?:\/\//i, '')
-                    document.getElementById('mastodonForm').style.display = 'none'
-                    document.getElementById('mastodonFormParagraph').style.display = 'none'
-                    document.getElementById('mastodonLoginText').style.textDecoration = 'line-through'
-                    document.getElementById('mastodonLoginParagraph').append(` Done. (Logged in as: @${json.username}@${mastodonHost})`)
+                    if (response.ok) {
+                        const json = await response.json()
+                        mastodonMe = json
+                        const mastodonHost = document.cookie
+                            ?.split('; ')
+                            ?.find(row => row.startsWith('mastodonHost='))
+                            ?.split('=')[1]
+                            ?.replace(/^https?:\/\//i, '')
+                        document.getElementById('mastodonForm').style.display = 'none'
+                        document.getElementById('mastodonFormParagraph').style.display = 'none'
+                        document.getElementById('mastodonLoginText').style.textDecoration = 'line-through'
+                        document.getElementById('mastodonLoginParagraph').append(` Done. (Logged in as: @${json.username}@${mastodonHost})`)
 
-                    const mastodonImportUrl = `https://${mastodonHost}/settings/import`
-                    document.getElementById('mastodonImportLink').textContent = mastodonImportUrl
-                    document.getElementById('mastodonImportLink').setAttribute('href', mastodonImportUrl)
+                        const mastodonImportUrl = `https://${mastodonHost}/settings/import`
+                        document.getElementById('mastodonImportLink').textContent = mastodonImportUrl
+                        document.getElementById('mastodonImportLink').setAttribute('href', mastodonImportUrl)
+                    }
                 }
 
                 if (mastodonToken && twitterToken) {
-                    await fetch('addOrUpdateTwitterToMastodonMapping')
-                    document.getElementById('csvLink').style.display = "block"
+                    const scanProgressCount = document.getElementById('scanProgressCount')
+                    const twitterFollowingCount = document.getElementById('twitterFollowingCount')
+                    const matchedMastodonUsers = document.getElementById('matchedMastodonUsers')
+
+                    try {
+                        await fetch('addOrUpdateTwitterToMastodonMapping')
+                        const response = await fetch('followingOnTwitter')
+                        if (response.ok) {
+                            twitterIds = await response.json()
+                        }
+                        twitterFollowingCount.innerText = twitterIds.length
+                    } catch (e) {
+                        console.error(e)
+                    }
+
+                    console.dir(twitterIds)
+
+                    let progress = 1
+                    for (const {id} of twitterIds) {
+                        try {
+                            const response = await fetch('matchTwitterUserToMastodon', {
+                                method: 'POST',
+                                body: id,
+                            })
+                            if (response.ok) {
+                                const mastodonId = await response.json()
+                                if (mastodonId) {
+                                    mastodonIds.push(mastodonId)
+                                }
+                            }
+                        } finally {
+                            scanProgressCount.innerText = progress++
+                            matchedMastodonUsers.innerText = mastodonIds.length
+                        }
+                    }
+
+                    console.dir(mastodonIds)
+
+                    const csvContent = 'data:text/csv;charset=utf-8,Account address,Show boosts\n' + mastodonIds.map(user => `${user},true`).join('\n')
+                    const csvURI = encodedUri = encodeURI(csvContent);
+
+                    const csvLink = document.getElementById('csvLink')
+                    csvLink.setAttribute('href', csvURI)
+                    csvLink.setAttribute("download", "new_mastodon_follows.csv");
+                    csvLink.style.display = "block"
                 }
             }
             onLoad()

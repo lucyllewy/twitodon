@@ -5,7 +5,9 @@ export const twitterChallengeCookieName = 'twitterChallenge',
 
 export async function twitterLoginUrl(cookie, protocol, hostname, port, pathname, searchParams, requestBody) {
     const challenge = randomBytes(20).toString('hex')
-    return new Response(JSON.stringify({ twitterLoginUrl: `https://twitter.com/i/oauth2/authorize?response_type=code&client_id=${client_id}&redirect_uri=${protocol}//${hostname}${port ? `:${port}` : ''}/twitterAuth&scope=tweet.read%20users.read%20follows.read&state=state&code_challenge=${challenge}&code_challenge_method=plain` }), {
+    const redirectUri = `${protocol}//${hostname}${port ? `:${port}` : ''}/twitterAuth`
+    console.dir(client_id)
+    return new Response(JSON.stringify({ twitterLoginUrl: `https://twitter.com/i/oauth2/authorize?response_type=code&client_id=${client_id}&redirect_uri=${redirectUri}&scope=tweet.read%20users.read%20follows.read&state=state&code_challenge=${challenge}&code_challenge_method=plain` }), {
         headers: {
             'Content-Type': 'application/json',
             'Set-Cookie': `${twitterChallengeCookieName}=${challenge}`,
@@ -17,10 +19,11 @@ export async function twitterAuth(cookie, protocol, hostname, port, pathname, se
     if (cookie[twitterChallengeCookieName] == null) {
         throw new Error('No Twitter Challenge cookie')
     }
+    const redirectUri = `${protocol}//${hostname}${port ? `:${port}` : ''}/twitterAuth`
     const body = `code=${encodeURIComponent(searchParams.get('code'))}&` +
     `grant_type=${encodeURIComponent('authorization_code')}&` +
     `client_id=${encodeURIComponent(client_id)}&` +
-    `redirect_uri=${encodeURIComponent(`${protocol}//${hostname}${port ? `:${port}` : ''}/twitterAuth`)}&` +
+    `redirect_uri=${encodeURIComponent(redirectUri)}&` +
     `code_verifier=${encodeURIComponent(cookie[twitterChallengeCookieName])}`
     const oauthData = await fetch('https://api.twitter.com/2/oauth2/token', {
         method: 'POST',
@@ -72,6 +75,9 @@ export async function followingOnTwitter(cookie, protocol, hostname, port, pathn
     while (hasNextPage) {
         const following = await getPage(nextToken)
         const resp = await following.json()
+        if ('status' in resp && resp.status !== 200) {
+            break;
+        }
         if (resp && resp.meta && resp.meta.result_count && resp.meta.result_count > 0) {
             if (resp.data) {
                 users.push(resp.data);
@@ -85,5 +91,6 @@ export async function followingOnTwitter(cookie, protocol, hostname, port, pathn
             hasNextPage = false;
         }
     }
-    return users
+
+    return users.flat(1)
 }

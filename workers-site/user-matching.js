@@ -18,22 +18,13 @@ export async function addOrUpdateTwitterToMastodonMapping(cookie, protocol, host
     await TWITTER_TO_MASTODON_USERMAP.put(meOnTwitter.data.id, `${meOnMastodon.username}@${cookie[mastodonHostCookieName].replace(/^https?:\/\//i, '').replace(/\/.*$/, '')}`)
 }
 
-export async function matchTwitterUsersToMastodon(cookie, protocol, hostname, port, pathname, searchParams, requestBody) {
+export async function matchTwitterUserToMastodon(cookie, protocol, hostname, port, pathname, searchParams, requestBody) {
     if (cookie[mastodonTokenCookieName] == null) {
         throw new Error('No Mastodon Authorization Token cookie')
     }
     if (cookie[mastodonHostCookieName] == null) {
         throw new Error('No Mastodon Hostname cookie')
     }
-    
-    const mastodonIds = []
-    const twitterIds = (await followingOnTwitter(cookie, protocol, hostname, port, pathname, searchParams, requestBody)).map(user => user.id)
-    for (const id of twitterIds) {
-        const mastodonId = await TWITTER_TO_MASTODON_USERMAP.get(id)
-        if (mastodonId) {
-            mastodonIds.push(mastodonId)
-        }
-    }
 
-    return mastodonIds
+    return await TWITTER_TO_MASTODON_USERMAP.get(requestBody)
 }
