@@ -15,6 +15,7 @@ kv_namespaces = [
 ]
 
 [env.dev]
+workers_dev = true
 vars = { ENVIRONMENT = "dev" }
 kv_namespaces = [
     { binding = "TWITTER_TO_MASTODON_USERMAP", id = "e09c82417eac4f3082e706348f9366fa", preview_id = "33f1370672674c3e9821f80557842f95" },

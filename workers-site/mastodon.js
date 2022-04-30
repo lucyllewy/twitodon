@@ -1,8 +1,6 @@
-import { matchTwitterUsersToMastodon } from './user-matching'
-
 export const mastodonHostCookieName = 'mastodonHost',
             mastodonTokenCookieName = 'mastodonToken',
-            scopes = 'read:accounts read:follows write:follows'
+            scopes = 'read:accounts' // read:follows write:follows
 
 async function registerMastodonApp(mastodonHost, mastodonDomain, redirectUri) {
     const response = await fetch(`${mastodonHost}/api/v1/apps`, {

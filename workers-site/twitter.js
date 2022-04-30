@@ -1,7 +1,6 @@
 import { randomBytes } from 'crypto'
 
-export const twitterChallengeCookieName = 'twitterChallenge',
-            twitterTokenCookieName = 'twitterToken'
+export const twitterTokenCookieName = 'twitterToken'
 
 export async function twitterLoginUrl(cookie, protocol, hostname, port, pathname, searchParams, requestBody) {
     const id = randomBytes(20).toString('hex')
@@ -20,9 +19,9 @@ export async function twitterLoginUrl(cookie, protocol, hostname, port, pathname
 
 export async function twitterAuth(cookie, protocol, hostname, port, pathname, searchParams, requestBody) {
     const id = searchParams.get('state')
-    const challenge = randomBytes(20).toString('hex')
+    const challenge = await TWITTER_USER_TOKENS.get(id)
     const CALLBACK_URL = `${protocol}//${hostname}${port ? `:${port}` : ''}/twitterAuth`
-    await TWITTER_USER_TOKENS.get(id)
+    
     const body = `code=${encodeURIComponent(searchParams.get('code'))}` +
                 `&grant_type=${encodeURIComponent('authorization_code')}` +
                 `&client_id=${encodeURIComponent(client_id)}` +
@@ -36,13 +35,12 @@ export async function twitterAuth(cookie, protocol, hostname, port, pathname, se
         },
     })
     const json = await oauthData.json()
-    const responseHeaders = new Headers({
-        location: `${protocol}//${hostname}${port ? `:${port}` : ''}/`,
-        'Set-Cookie': `${twitterTokenCookieName}=${json.access_token}`,
-    })
     return new Response(null, {
         status: 301,
-        headers: responseHeaders,
+        headers: {
+            location: `${protocol}//${hostname}${port ? `:${port}` : ''}/`,
+            'Set-Cookie': `${twitterTokenCookieName}=${json.access_token}`,
+        },
     })
 }
 

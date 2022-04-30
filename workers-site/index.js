@@ -97,7 +97,6 @@ async function handleEvent(event) {
         } else if (pathname === '/matchTwitterUserToMastodon') {
             const mastodonId = await matchTwitterUserToMastodon(cookie, protocol, hostname, port, pathname, searchParams, requestBody)
             if (mastodonId) {
-                console.dir(mastodonId)
                 response = new Response(mastodonId)
             } else {
                 response = new Response(null, {status: 404})
