@@ -10,6 +10,7 @@ zone_id = "aaf98463fb45282d08b91c8f16461ef3"
 route = "twitodon.com/*"
 kv_namespaces = [
     { binding = "TWITTER_TO_MASTODON_USERMAP", id = "e09c82417eac4f3082e706348f9366fa", preview_id = "33f1370672674c3e9821f80557842f95" },
+    { binding = "TWITTER_USER_TOKENS", id = "a91c7c5a3f7c4e52b00924976ced8715", preview_id = "f0e249de88524036a199b87b769d3610" },
     { binding = "MASTODON_APPS", id = "28a42b13583e4bd3839ae1cf40e61fc8", preview_id = "da2b65b1ee934f30af1b7555d8ded84e" },
 ]
 
@@ -17,6 +18,7 @@ kv_namespaces = [
 vars = { ENVIRONMENT = "dev" }
 kv_namespaces = [
     { binding = "TWITTER_TO_MASTODON_USERMAP", id = "e09c82417eac4f3082e706348f9366fa", preview_id = "33f1370672674c3e9821f80557842f95" },
+    { binding = "TWITTER_USER_TOKENS", id = "a91c7c5a3f7c4e52b00924976ced8715", preview_id = "f0e249de88524036a199b87b769d3610" },
     { binding = "MASTODON_APPS", id = "28a42b13583e4bd3839ae1cf40e61fc8", preview_id = "da2b65b1ee934f30af1b7555d8ded84e" },
 ]
 
