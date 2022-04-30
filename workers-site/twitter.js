@@ -10,7 +10,6 @@ export async function twitterLoginUrl(cookie, protocol, hostname, port, pathname
     await TWITTER_USER_TOKENS.put(id, challenge, {expirationTtl: 3600})
     return new Response(
         JSON.stringify({
-            sessionId: id,
             twitterLoginUrl: `https://twitter.com/i/oauth2/authorize?response_type=code&client_id=${client_id}&redirect_uri=${CALLBACK_URL}&scope=tweet.read%20users.read%20follows.read&state=${id}&code_challenge=${challenge}&code_challenge_method=plain`
         }), {
             headers: {
@@ -28,7 +27,7 @@ export async function twitterAuth(cookie, protocol, hostname, port, pathname, se
                 `&grant_type=${encodeURIComponent('authorization_code')}` +
                 `&client_id=${encodeURIComponent(client_id)}` +
                 `&redirect_uri=${encodeURIComponent(CALLBACK_URL)}` +
-                `&code_verifier=${encodeURIComponent(cookie[twitterChallengeCookieName])}`
+                `&code_verifier=${encodeURIComponent(challenge)}`
     const oauthData = await fetch('https://api.twitter.com/2/oauth2/token', {
         method: 'POST',
         body,
