@@ -12,11 +12,10 @@ async function registerMastodonApp(mastodonHost, mastodonDomain, redirectUri) {
             `&redirect_uris=${encodeURIComponent(redirectUri)}` +
             `&scopes=${encodeURIComponent(scopes)}`
     })
-    const json = await response.text()
-    const {client_id, client_secret} = JSON.parse(json)
-    await MASTODON_APPS.put(`client_id:${mastodonDomain}`, client_id)
-    await MASTODON_APPS.put(`client_secret:${mastodonDomain}`, client_secret)
-    return client_id
+    const {client_id: mastodon_client_id, client_secret: mastodon_client_secret}  = await response.json()
+    await MASTODON_APPS.put(`client_id:${mastodonDomain}`, mastodon_client_id)
+    await MASTODON_APPS.put(`client_secret:${mastodonDomain}`, mastodon_client_secret)
+    return mastodon_client_id
 }
 
 export async function mastodonLoginUrl(cookie, protocol, hostname, port, pathname, searchParams, requestBody) {
@@ -24,13 +23,13 @@ export async function mastodonLoginUrl(cookie, protocol, hostname, port, pathnam
     const mastodonDomain = mastodonHost.replace(/^https?:\/\//i, '').replace(/\/.*$/, '')
     const redirectUri = `${protocol}//${hostname}${port ? `:${port}` : ''}/mastodonAuth`
 
-    let client_id = await MASTODON_APPS.get(`client_id:${mastodonDomain}`)
-    if (!client_id) {
-        client_id = await registerMastodonApp(mastodonHost, mastodonDomain, redirectUri)
+    let mastodon_client_id = await MASTODON_APPS.get(`client_id:${mastodonDomain}`)
+    if (!mastodon_client_id) {
+        mastodon_client_id = await registerMastodonApp(mastodonHost, mastodonDomain, redirectUri)
     }
 
     return new Response(
-        JSON.stringify({ mastodonLoginUrl: `${mastodonHost}/oauth/authorize?response_type=code&client_id=${client_id}&redirect_uri=${redirectUri}&scope=${scopes}` }), {
+        JSON.stringify({ mastodonLoginUrl: `${mastodonHost}/oauth/authorize?response_type=code&client_id=${mastodon_client_id}&redirect_uri=${redirectUri}&scope=${scopes}` }), {
         headers: {
             'Content-Type': 'application/json',
             'Set-Cookie': `mastodonHost=${mastodonHost}`,
@@ -47,17 +46,17 @@ export async function mastodonAuth(cookie, protocol, hostname, port, pathname, s
     const mastodonDomain = mastodonHost.replace(/^https?:\/\//i, '').replace(/\/.*$/, '')
     const redirectUri = `${protocol}//${hostname}${port ? `:${port}` : ''}/mastodonAuth`
 
-    const client_id = await MASTODON_APPS.get(`client_id:${mastodonDomain}`)
-    const client_secret = await MASTODON_APPS.get(`client_secret:${mastodonDomain}`)
+    const mastodon_client_id = await MASTODON_APPS.get(`client_id:${mastodonDomain}`)
+    const mastodon_client_secret = await MASTODON_APPS.get(`client_secret:${mastodonDomain}`)
 
-    if (!client_id || !client_secret) {
+    if (!mastodon_client_id || !mastodon_client_secret) {
         throw new Error('Where are my credentials?!')
     }
 
     const body = `code=${encodeURIComponent(searchParams.get('code'))}` +
                 `&grant_type=${encodeURIComponent('authorization_code')}` +
-                `&client_id=${encodeURIComponent(client_id)}` +
-                `&client_secret=${encodeURIComponent(client_secret)}` +
+                `&client_id=${encodeURIComponent(mastodon_client_id)}` +
+                `&client_secret=${encodeURIComponent(mastodon_client_secret)}` +
                 `&redirect_uri=${encodeURIComponent(redirectUri)}` +
                 `&scope=${encodeURIComponent(scopes)}`
 
