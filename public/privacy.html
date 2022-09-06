@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+    <head>
+        <link rel="icon" type="image/x-icon" href="favicon.ico">
+        <link href="https://fonts.googleapis.com/css?family=Pacifico&display=swap" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" rel="stylesheet" />
+        <style>
+            body {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            h1 {
+                font-family: Pacifico, sans-serif;
+                font-size: 4em;
+                color: #3eb5f1;
+                margin: 0;
+            }
+
+            h2 {
+                font-weight: 300;
+                font-family: sans-serif;
+            }
+
+            div {
+                width: 90vw;
+                max-width: 640px;
+            }
+
+            .centered {
+                text-align: center;
+            }
+
+            #ferris {
+                width: 75%;
+            }
+
+            .github-fork-ribbon:before { background-color: hotpink; }
+        </style>
+        <title>Twitodon - Find your Twitter friends on Mastodon</title>
+    </head>
+    <body>
+        <div class="centered">
+            <h1>Twitodon</h1>
+            <h2>Find your Twitter friends on Mastodon</h2>
+            <iframe src="https://github.com/sponsors/diddledani/button" title="Sponsor diddledani" height="35" width="116" style="border: 0;"></iframe>
+            <h3>Twitodon privacy policy</h3>
+        </div>
+        <div>
+            <p>
+                This service collects your twitter ID and your Mastodon Username and instance domain
+                name. This is then saved in the database providing a link between your Twitter
+                identity and your Mastodon identity. No other information is saved.
+            </p>
+
+            <p>
+                When a user logs into Twitodon and downloads the offered CSV file they are receiving
+                a correlated map of Twitter user IDs of user they follow matched against those users'
+                Mastodon username and instance name. If you do not want to be discoverable on Mastodon
+                by users who follow you on twitter then do not login and use this service.
+            </p>
+
+            <p>
+                Twitodon does not utilise any analytics or advertising cookies.
+            </p>
+        </div>
+    </body>
+</html>
