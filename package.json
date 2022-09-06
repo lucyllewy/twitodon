@@ -1,13 +1,10 @@
 {
   "name": "twitodon.com",
   "version": "1.0.0",
-  "description": "",
+  "description": "Twitter to Mastodon account mapping service to aid migration away from Twitter without losing all your followed friends",
   "main": "index.mjs",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
+  "author": "Dani Llewellyn (diddledani)",
+  "license": "MIT",
   "private": "true",
   "dependencies": {
     "@fastify/cookie": "^8.1.0",
