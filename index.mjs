@@ -29,6 +29,8 @@ const __dirname = path.dirname(__filename);
 
 const app = Fastify({
     logger: true,
+    disableRequestLogging: true,
+    trustProxy: true,
 })
 
 app.register(mongodb, {
