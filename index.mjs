@@ -28,8 +28,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = Fastify({
-    logger: false,
-    http2: true,
+    logger: true,
 })
 
 app.register(mongodb, {
