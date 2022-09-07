@@ -54,7 +54,7 @@ export async function matchTwitterUserToMastodon(request, reply) {
 
     const result = await this.mongo.db.collection('twitter_to_mastodon_usermap').findOne({ _id: request.body })
     if (result) {
-        reply.send(result.mastodon_id)
+        return reply.send(result.mastodon_id)
     }
     reply.status(404).send()
 }
