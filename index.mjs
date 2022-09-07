@@ -28,7 +28,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = Fastify({
-    logger: false
+    logger: false,
+    http2: true,
 })
 
 app.register(mongodb, {
@@ -61,7 +62,7 @@ app.get('/followingOnTwitter', followingOnTwitter)
 app.get('/addOrUpdateTwitterToMastodonMapping', addOrUpdateTwitterToMastodonMapping)
 app.post('/matchTwitterUserToMastodon', matchTwitterUserToMastodon)
 
-app.listen({ port: process.env.PORT ?? 3000 }, function (err, address) {
+app.listen({ host: '::', port: process.env.PORT ?? 3000 }, function (err, address) {
     if (err) {
         app.log.error(err)
         process.exit(1)
