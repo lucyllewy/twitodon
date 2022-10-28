@@ -29,6 +29,10 @@
                 max-width: 640px;
             }
 
+            details > summary {
+                cursor: pointer;
+            }
+
             .centered {
                 text-align: center;
             }
@@ -48,8 +52,8 @@
             <iframe src="https://github.com/sponsors/diddledani/button" title="Sponsor diddledani" height="35" width="116" style="border: 0;"></iframe>
         </div>
         <div>
-            <p id="twitterLoginParagraph">Step 1. <a id="twitterLoginLink">Login With Twitter</a>.</p>
-            <p id="mastodonLoginParagraph">Step 2. <span id="mastodonLoginText">Login With Mastodon</span>.</p>
+            <p id="twitterLoginParagraph">Step 1. <a id="twitterLoginLink">Login With Twitter</a>. <button id="twitterLogoutLink" style="display: none">Logout and revoke access</button></p>
+            <p id="mastodonLoginParagraph">Step 2. <span id="mastodonLogoutLink">Login With Mastodon</span>. <button id="mastodonLogoutText" style="display: none">Logout and revoke access</button></p>
             <p id="mastodonFormParagraph">Enter your Mastodon host's web address:</p>
             <form method="get" id="mastodonForm">
                 <input type="text" placeholder="https://mastodon.social/" id="mastodonHostField" />
@@ -59,6 +63,7 @@
             <p>Step 3. Download matching users in CSV format to import into your Mastodon account. <a style="display: none" id="csvLink" href="/downloadFollowableCSV">Click Here to download the CSV file</a></p>
 
             <p>Important information about how your data is handled is available in the <a href="privacy.html">Privacy Policy</a>.</p>
+            <p>To revoke access, use the buttons that appear when you are successfully logged into Twitodon. Your login session has a time limit, though, so the buttons will not appear until you refresh your session by logging in again. When visible, clicking the Revoke button will completely dissacotiate Twitodon from your Twitter or Masotodon account.</p>
 
             <details>
                 <summary>Instructions for importing the CSV into your Mastodon instance</summary>
@@ -86,6 +91,23 @@
                 mastodonLoginButton = document.getElementById('loginToMastodon')
 
             async function onLoad() {
+                document.getElementById('twitterLogoutLink').addEventListener('click', async () => {
+                    const res = await fetch('/twitterDeAuth')
+                    if (res.status === 200) {
+                        window.location.reload()
+                    } else {
+                        alert('Failed to revoke access')
+                    }
+                })
+                document.getElementById('mastodonLogoutLink').addEventListener('click', async () => {
+                    const res = await fetch('/mastodonDeAuth')
+                    if (res.status === 200) {
+                        window.location.reload()
+                    } else {
+                        alert('Failed to revoke access')
+                    }
+                })
+
                 document.getElementById('mastodonForm').addEventListener('submit', async e => {
                     e.preventDefault()
                     if (mastodonHostField.value && !mastodonLoginButton.hasAttribute('disabled')) {
@@ -110,9 +132,10 @@
                     const response = await fetch('twitterMe')
                     if (response.ok) {
                         twitterMe = await response.text()
-                        document.getElementById('twitterLoginParagraph').append(` Done. (Logged in as: @${twitterMe})`)
+                        document.getElementById('twitterLoginLink').after(` Done. (Logged in as: @${twitterMe})`)
                         document.getElementById('twitterLoginLink').style.textDecoration = 'line-through'
                         document.getElementById('loginToMastodon').removeAttribute('disabled')
+                        document.getElementById('twitterLogoutLink').style.display = 'inline'
                     } else {
                         twitterToken = null
                     }
@@ -139,7 +162,8 @@
                         document.getElementById('mastodonForm').style.display = 'none'
                         document.getElementById('mastodonFormParagraph').style.display = 'none'
                         document.getElementById('mastodonLoginText').style.textDecoration = 'line-through'
-                        document.getElementById('mastodonLoginParagraph').append(` Done. (Logged in as: @${mastodonMe}@${mastodonHost})`)
+                        document.getElementById('mastodonLoginText').after(` Done. (Logged in as: @${mastodonMe}@${mastodonHost})`)
+                        document.getElementById('mastodonLogoutLink').style.display = 'inline'
 
                         const mastodonImportUrl = `https://${mastodonHost}/settings/import`
                         document.getElementById('mastodonImportLink').textContent = mastodonImportUrl

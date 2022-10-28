@@ -9,6 +9,7 @@ import servestatic from '@fastify/static'
 import {
     twitterLoginUrl,
     twitterAuth,
+    twitterDeAuth,
     twitterMe,
     followingOnTwitter,
 } from './api/twitter.mjs'
@@ -16,6 +17,7 @@ import {
 import {
     mastodonLoginUrl,
     mastodonAuth,
+    mastodonDeAuth,
     mastodonMe,
 } from './api/mastodon.mjs'
 
@@ -34,10 +36,10 @@ const app = Fastify({
 })
 
 app.register(mongodb, {
-  // force to close the mongodb connection when app stopped
-  // the default value is false
-  forceClose: true,
-  url: process.env.MongoUrl,
+    // force to close the mongodb connection when app stopped
+    // the default value is false
+    forceClose: true,
+    url: process.env.MongoUrl,
 })
 
 app.register(cookie, {
@@ -55,9 +57,11 @@ app.register(servestatic, {
 
 app.get('/twitterLoginUrl', twitterLoginUrl)
 app.get('/twitterAuth', twitterAuth)
+app.get('/twitterDeAuth', twitterDeAuth)
 app.get('/twitterMe', twitterMe)
 app.get('/mastodonLoginUrl', mastodonLoginUrl)
 app.get('/mastodonAuth', mastodonAuth)
+app.get('/mastodonDeAuth', mastodonDeAuth)
 app.get('/mastodonMe', mastodonMe)
 app.get('/followingOnTwitter', followingOnTwitter)
 app.get('/addOrUpdateTwitterToMastodonMapping', addOrUpdateTwitterToMastodonMapping)

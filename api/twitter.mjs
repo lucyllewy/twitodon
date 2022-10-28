@@ -66,9 +66,41 @@ export async function twitterAuth(request, reply) {
         .setCookie(twitterTokenCookieName, json.access_token, {
             maxAge: json.expires_in,
             signed: true,
-            sameSite: 'lax',
+            sameSite: 'strict',
         })
         .redirect('/')
+}
+
+/**
+ * @param {import('fastify').FastifyRequest} request 
+ * @param {import('fastify').FastifyReply} reply 
+ * @returns void
+ */
+export async function twitterDeAuth(request, reply) {
+    const token = request.unsignCookie(request.cookies[twitterTokenCookieName])
+    if (!token.valid) {
+        throw new Error('No Twitter Authorization Token cookie')
+    }
+
+    const body = `token=${encodeURIComponent(token.value)}` +
+                '&token_type_hint=access_token' +
+                `&client_id=${encodeURIComponent(client_id)}`
+
+    const res = await fetch('https://api.twitter.com/2/oauth2/revoke', {
+        method: 'POST',
+        body,
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+    })
+
+    const text = await res.text()
+
+    if (res.status !== 200) {
+        return reply.code(res.status).send(text)
+    }
+
+    reply.clearCookie(twitterTokenCookieName).send()
 }
 
 export async function meHandler(token) {
@@ -80,7 +112,7 @@ export async function meHandler(token) {
     if (data.status !== 200) {
         throw new Error('Twitter API Error')
     }
-    return data.json()
+    return await data.json()
 }
 
 /**

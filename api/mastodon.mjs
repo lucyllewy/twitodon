@@ -127,9 +127,44 @@ export async function mastodonAuth(request, reply) {
         .setCookie(mastodonTokenCookieName, json.access_token, {
             maxAge: 3600,
             signed: true,
-            sameSite: 'lax',
+            sameSite: 'strict',
         })
         .redirect('/')
+}
+
+export async function mastodonDeAuth(request, reply) {
+    const tokenCookie = request.unsignCookie(request.cookies[mastodonTokenCookieName])
+    const hostCookie = request.unsignCookie(request.cookies[mastodonHostCookieName])
+    if (!tokenCookie.valid) {
+        throw new Error('No Mastodon Authorization Token cookie')
+    }
+    if (!hostCookie.valid) {
+        throw new Error('No Mastodon Hostname cookie')
+    }
+
+    const {client_id, client_secret} = await getMastodonApp.call(this, mastodonDomain)
+
+    if (!client_id || !client_secret) {
+        throw new Error('Where are my credentials?!')
+    }
+
+    const body = `client_id=${encodeURIComponent(client_id)}` +
+                `&client_secret=${encodeURIComponent(client_secret)}` +
+                `&token=${encodeURIComponent(tokenCookie.value)}`
+
+    const res = await fetch(`${hostCookie.value}/oauth/revoke`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body,
+    })
+
+    if (res.status !== 200) {
+        return reply.status(res.status).send()
+    }
+
+    reply.clearCookie(mastodonTokenCookieName).send()
 }
 
 export async function meHandler(host, token) {
