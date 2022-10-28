@@ -147,7 +147,7 @@ export async function mastodonDeAuth(request, reply) {
         throw new Error('No Mastodon Hostname cookie')
     }
 
-    const mastodonDomain = (new URL(mastodonHost.value)).hostname
+    const mastodonDomain = (new URL(hostCookie.value)).hostname
     const {client_id, client_secret} = await getMastodonApp.call(this, mastodonDomain)
 
     if (!client_id || !client_secret) {
