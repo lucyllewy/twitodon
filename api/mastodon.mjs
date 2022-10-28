@@ -142,7 +142,7 @@ export async function mastodonDeAuth(request, reply) {
         throw new Error('No Mastodon Hostname cookie')
     }
 
-    const {client_id, client_secret} = await getMastodonApp.call(this, mastodonDomain)
+    const {client_id, client_secret} = await getMastodonApp.call(this, hostCookie.value)
 
     if (!client_id || !client_secret) {
         throw new Error('Where are my credentials?!')
