@@ -5,7 +5,7 @@ export const mastodonHostCookieName = 'mastodonHost',
             scopes = 'read:accounts' // read:follows write:follows
 
 /**
- * @param {string} mastodonDomain 
+ * @param {string} mastodonDomain
  * @returns Promise<{_id: string, client_id: string, client_secret: string}>
  */
 function getMastodonApp(mastodonDomain) {
@@ -13,9 +13,9 @@ function getMastodonApp(mastodonDomain) {
 }
 
 /**
- * @param {string} mastodonHost 
- * @param {string} mastodonDomain 
- * @param {string} redirectUri 
+ * @param {string} mastodonHost
+ * @param {string} mastodonDomain
+ * @param {string} redirectUri
  * @returns Promise<string>
  */
 async function createMastodonApp(mastodonHost, mastodonDomain, redirectUri) {
@@ -45,9 +45,9 @@ async function createMastodonApp(mastodonHost, mastodonDomain, redirectUri) {
 }
 
 /**
- * @param {string} mastodonHost 
- * @param {string} mastodonDomain 
- * @param {string} redirectUri 
+ * @param {string} mastodonHost
+ * @param {string} mastodonDomain
+ * @param {string} redirectUri
  * @returns Promise<string>
  */
 async function getOrCreateMastodonApp(mastodonHost, mastodonDomain, redirectUri) {
@@ -60,8 +60,8 @@ async function getOrCreateMastodonApp(mastodonHost, mastodonDomain, redirectUri)
 }
 
 /**
- * @param {import('fastify').FastifyRequest} request 
- * @param {import('fastify').FastifyReply} reply 
+ * @param {import('fastify').FastifyRequest} request
+ * @param {import('fastify').FastifyReply} reply
  * @returns void
  */
 export async function mastodonLoginUrl(request, reply) {
@@ -83,8 +83,8 @@ export async function mastodonLoginUrl(request, reply) {
 }
 
 /**
- * @param {import('fastify').FastifyRequest} request 
- * @param {import('fastify').FastifyReply} reply 
+ * @param {import('fastify').FastifyRequest} request
+ * @param {import('fastify').FastifyReply} reply
  * @returns void
  */
 export async function mastodonAuth(request, reply) {
@@ -132,6 +132,11 @@ export async function mastodonAuth(request, reply) {
         .redirect('/')
 }
 
+/**
+ * @param {import('fastify').FastifyRequest} request
+ * @param {import('fastify').FastifyReply} reply
+ * @returns void
+ */
 export async function mastodonDeAuth(request, reply) {
     const tokenCookie = request.unsignCookie(request.cookies[mastodonTokenCookieName])
     const hostCookie = request.unsignCookie(request.cookies[mastodonHostCookieName])
@@ -142,7 +147,8 @@ export async function mastodonDeAuth(request, reply) {
         throw new Error('No Mastodon Hostname cookie')
     }
 
-    const {client_id, client_secret} = await getMastodonApp.call(this, hostCookie.value)
+    const mastodonDomain = (new URL(mastodonHost.value)).hostname
+    const {client_id, client_secret} = await getMastodonApp.call(this, mastodonDomain)
 
     if (!client_id || !client_secret) {
         throw new Error('Where are my credentials?!')
@@ -181,8 +187,8 @@ export async function meHandler(host, token) {
 }
 
 /**
- * @param {import('fastify').FastifyRequest} request 
- * @param {import('fastify').FastifyReply} reply 
+ * @param {import('fastify').FastifyRequest} request
+ * @param {import('fastify').FastifyReply} reply
  * @returns void
  */
 export async function mastodonMe(request, reply) {
