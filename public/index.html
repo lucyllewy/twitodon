@@ -52,6 +52,7 @@
             <iframe src="https://github.com/sponsors/diddledani/button" title="Sponsor diddledani" height="35" width="116" style="border: 0;"></iframe>
         </div>
         <div>
+            <p>When you login to Twitodon with both your Twitter and Mastodon accounts it will memorise the association between your two accounts. Twitodon will then match any Twitter users you follow that have previously loged into Twitodon thereby providing their own association information. Unfortunately, there is no way of discovering, or guessing, Twitter users on Mastodon without them logging into Twitodon previously. Because of this, it is recommended to check back again regularly to keep up to date as more users use Twitodon.</p>
             <p id="twitterLoginParagraph">Step 1. <a id="twitterLoginLink">Login With Twitter</a>. <button id="twitterLogoutLink" style="display: none">Logout and revoke access</button></p>
             <p id="mastodonLoginParagraph">Step 2. <span id="mastodonLoginText">Login With Mastodon</span>. <button id="mastodonLogoutLink" style="display: none">Logout</button></p>
             <p id="mastodonFormParagraph">Enter your Mastodon host's web address:</p>
@@ -59,7 +60,7 @@
                 <input type="text" placeholder="https://mastodon.social/" id="mastodonHostField" />
                 <input type="submit" disabled id="loginToMastodon" value="Login" />
             </form>
-            <p>Looking for Mastodon users progress, scanned <span id="scanProgressCount">0</span> of <span id="twitterFollowingCount">0</span> users you follow on Twitter. Discovered <span id="matchedMastodonUsers">0</span> Twitter users already on Mastodon.</p>
+            <p>Looking for Mastodon users progress, scanned <span id="scanProgressCount">0</span> of <span id="twitterFollowingCount">0</span> users you follow on Twitter. Discovered <span id="matchedMastodonUsers">0</span> Twitter users on Mastodon who have previously linked their Twitter and Mastodon accounts by logging into Twitodon.</p>
             <p>Step 3. Download matching users in CSV format to import into your Mastodon account. <a style="display: none" id="csvLink" href="/downloadFollowableCSV">Click Here to download the CSV file</a></p>
 
             <p>Important information about how your data is handled is available in the <a href="privacy.html">Privacy Policy</a>.</p>
