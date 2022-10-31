@@ -50,20 +50,25 @@
         </div>
         <div>
             <p>
-                This service collects your twitter ID and your Mastodon Username and instance domain
-                name. This is then saved in the database providing a link between your Twitter
-                identity and your Mastodon identity. No other information is saved.
+                This service collects <em>only</em> your twitter ID and your Mastodon Username and
+                instance domain name. These are saved in the database to providing a link between
+                your Twitter identity and your Mastodon identity. The list of users you follow on
+                Twitter is accessed but <strong>never</strong> saved. No other data is accessed
+                even if it is possible to do so based on the required permissions requested from
+                Twitter to gain access to the list of users you follow. Twitodon has attempted to
+                restrict the permissions requested to the minimum required to function.
             </p>
 
             <p>
-                When a user logs into Twitodon and downloads the offered CSV file they are receiving
-                a correlated map of Twitter user IDs of user they follow matched against those users'
+                When a you log into Twitodon and download the offered CSV file you are receiving a
+                correlated map of Twitter user IDs of users you follow matched against those users'
                 Mastodon username and instance name. If you do not want to be discoverable on Mastodon
-                by users who follow you on twitter then do not login and use this service.
+                by users who follow you on twitter then do not use this service.
             </p>
 
             <p>
-                Twitodon does not utilise any analytics or advertising cookies.
+                Twitodon does not utilise any analytics or advertising cookies, and does not sell any
+                data nor make any data available to third parties.
             </p>
         </div>
     </body>
