@@ -1,376 +1,340 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<link rel="icon" type="image/x-icon" href="favicon.ico" />
-		<link rel="stylesheet" href="styles/main.css" />
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-		<link
-			href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;700&display=swap"
-			rel="stylesheet"
-		/>
-		<link
-			href="https://fonts.googleapis.com/css?family=Pacifico&display=swap"
-			rel="stylesheet"
-		/>
-		<title>Twitodon - Find your Twitter friends on Mastodon</title>
-	</head>
-	<body>
-		<header class="header">
-			<h1 class="header__logo">Twitodon</h1>
-			<h2 class="header__desc">Find your Twitter friends on Mastodon</h2>
-			<div class="header__btns">
-				<a
-					href="https://github.com/sponsors/diddledani"
-					class="btn__filled"
-				>
-					Sponsor
-				</a>
-				<a
-					href="https://github.com/diddledani/twitodon"
-					class="btn__outlined"
-				>
-					Github
-				</a>
-			</div>
-		</header>
-		<main class="main">
-			<section class="main__info">
-				<p>
-					When you login to Twitodon with both your Twitter and
-					Mastodon accounts it will memorise the association between
-					your two accounts. Twitodon will then match any Twitter
-					users you follow that have previously loged into Twitodon
-					thereby providing their own association information.
-					Unfortunately, there is no way of discovering, or guessing,
-					Twitter users on Mastodon without them logging into Twitodon
-					previously. Because of this, it is recommended to check back
-					again regularly to keep up to date as more users use
-					Twitodon.
-				</p>
-			</section>
-			<section class="main__info" id="twitterLoginParagraph">
-				<b>Step 1.</b> <a id="twitterLoginLink">Login With Twitter</a>.
-				<button
-					id="twitterLogoutLink"
-					style="display: none"
-					class="btn__filled"
-				>
-					Logout and revoke access
-				</button>
-			</section>
-			<section class="main__info">
-				<p id="mastodonLoginParagraph">
-					<b>Step 2.</b>
-					<span id="mastodonLoginText">Login With Mastodon</span>.
-					<button
-						id="mastodonLogoutLink"
-						style="display: none"
-						class="btn__filled"
-					>
-						Logout
-					</button>
-				</p>
-				<div style="margin: 15px 0">
-					<p id="mastodonFormParagraph">
-						Enter your Mastodon host's web address:
-					</p>
-					<form method="get" id="mastodonForm" style="margin: 10px 0">
-						<input
-							type="text"
-							placeholder="https://mastodon.social/"
-							id="mastodonHostField"
-							class="input__outlined"
-						/>
-						<input
-							type="submit"
-							disabled
-							id="loginToMastodon"
-							value="Login"
-							class="btn__disabled"
-						/>
-					</form>
-				</div>
-				<p>
-					Looking for Mastodon users progress, scanned
-					<span id="scanProgressCount" class="bolded">0</span> of
-					<span id="twitterFollowingCount" class="bolded">0</span>
-					users you follow on Twitter. Discovered
-					<span id="matchedMastodonUsers" class="bolded">0</span>
-					Twitter users on Mastodon who have previously linked their
-					Twitter and Mastodon accounts by logging into Twitodon.
-				</p>
-			</section>
-			<section class="main__info">
-				<p>
-					<b>Step 3.</b> Download matching users in CSV format to
-					import into your Mastodon account.
-					<a
-						style="display: none"
-						id="csvLink"
-						href="/downloadFollowableCSV"
-						>Click Here to download the CSV file</a
-					>
-				</p>
-			</section>
-			<section class="main__info">
-				<p>
-					Important information about how your data is handled is
-					available in the <a href="privacy.html">Privacy Policy</a>.
-				</p>
-				<br />
-				<p>
-					To revoke access to Twitter, use the button that appears
-					when you are successfully logged into Twitodon with your
-					Twitter account. Your login session has a time limit,
-					though, so the buttons will not appear until you refresh
-					your session by logging in again. When visible, clicking the
-					Revoke button will completely dissacotiate Twitodon from
-					your Twitter account. (Unfortunately Mastodon doesn't
-					provide Twitodon the ability to revoke access, but you can
-					still logout. To completely revoke access you need to
-					navigate to your Mastodon instance, login and go to your
-					settings/preferences page, select "account" followed by
-					"authorized apps", find the Twitodon app and click the
-					revoke button on the entry.)
-				</p>
-			</section>
-			<section class="main__info">
-				<details>
-					<summary class="bolded">
-						Instructions for importing the CSV into your Mastodon
-						instance
-					</summary>
-					<ol>
-						<li>
-							<p>
-								Navigate to your Mastodon instance's import
-								page:
-								<a
-									id="mastodonImportLink"
-									href="https://mastodon.social/settings/import"
-									>https://mastodon.social/settings/import</a
-								>
-							</p>
-							<p class="centered">
-								<img
-									src="img/import-screen.png"
-									title="A screenshot showing the import following list for a Mastodon account"
-								/>
-							</p>
-						</li>
-						<li>
-							Click the browse button and select the file
-							<code>new_mastodon_follows.csv</code>, that you
-							downloaded from Twitodon.
-						</li>
-						<li>
-							Ensure that "Merge" is selected as the chosen
-							strategy or you'll unfollow anyone that isn't in
-							your CSV file.
-						</li>
-						<li>
-							Finally click the Upload button. This will upload
-							your CSV and put it into a queue. Your Mastodon
-							server will process it over the next few hours to a
-							couple of days.
-						</li>
-					</ol>
-				</details>
-			</section>
-		</main>
-		<script type="text/javascript">
-			let twitterMe = '',
-				mastodonMe = '',
-				twitterIds = [],
-				mastodonIds = []
 
-			const mastodonHostField =
-					document.getElementById('mastodonHostField'),
-				mastodonLoginButton = document.getElementById('loginToMastodon')
+<head>
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="stylesheet" href="styles/main.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Pacifico&display=swap" rel="stylesheet" />
+    <title>Twitodon - Find your Twitter friends on Mastodon</title>
+</head>
 
-			async function onLoad() {
-				document
-					.getElementById('twitterLogoutLink')
-					.addEventListener('click', async () => {
-						const res = await fetch('/twitterDeAuth')
-						if (res.status === 200) {
-							window.location.reload()
-						} else {
-							alert('Failed to revoke access')
-						}
-					})
-				document
-					.getElementById('mastodonLogoutLink')
-					.addEventListener('click', async () => {
-						const res = await fetch('/mastodonDeAuth')
-						if (res.status === 200) {
-							window.location.reload()
-						} else {
-							alert('Failed to revoke access')
-						}
-					})
+<body>
+    <header class="header">
+        <h1 class="header__logo">Twitodon</h1>
+        <h2 class="header__desc">Find your Twitter friends on Mastodon</h2>
+        <div class="header__btns">
+            <a href="https://github.com/sponsors/diddledani" class="btn__filled">
+                Sponsor
+            </a>
+            <a href="https://github.com/diddledani/twitodon" class="btn__outlined">
+                Github
+            </a>
+        </div>
+    </header>
+    <main class="main">
+        <section class="main__info">
+            <p>
+                When you login to Twitodon with both your Twitter and
+                Mastodon accounts it will memorise the association between
+                your two accounts. Twitodon will then match any Twitter
+                users you follow that have previously loged into Twitodon
+                thereby providing their own association information.
+                Unfortunately, there is no way of discovering, or guessing,
+                Twitter users on Mastodon without them logging into Twitodon
+                previously. Because of this, it is recommended to check back
+                again regularly to keep up to date as more users use
+                Twitodon.
+            </p>
+        </section>
+        <section class="main__info" id="twitterLoginParagraph">
+            <b>Step 1.</b> <a id="twitterLoginLink">Login With Twitter</a>.
+            <button id="twitterLogoutLink" style="display: none" class="btn__filled">
+                Logout and revoke access
+            </button>
+        </section>
+        <section class="main__info">
+            <p id="mastodonLoginParagraph">
+                <b>Step 2.</b>
+                <span id="mastodonLoginText">Login With Mastodon</span>.
+                <button id="mastodonLogoutLink" style="display: none" class="btn__filled">
+                    Logout
+                </button>
+            </p>
+            <div style="margin: 15px 0">
+                <p id="mastodonFormParagraph">
+                    Enter your Mastodon host's web address:
+                </p>
+                <form method="get" id="mastodonForm" style="margin: 10px 0">
+                    <input type="text" placeholder="https://mastodon.social/" id="mastodonHostField"
+                        class="input__outlined" />
+                    <input type="submit" disabled id="loginToMastodon" value="Login" class="btn__disabled" />
+                </form>
+            </div>
+            <p>
+                Looking for Mastodon users progress, scanned
+                <span id="scanProgressCount" class="bolded">0</span> of
+                <span id="twitterFollowingCount" class="bolded">0</span>
+                users you follow on Twitter. Discovered
+                <span id="matchedMastodonUsers" class="bolded">0</span>
+                Twitter users on Mastodon who have previously linked their
+                Twitter and Mastodon accounts by logging into Twitodon.
+            </p>
+        </section>
+        <section class="main__info">
+            <p>
+                <b>Step 3.</b> Download matching users in CSV format to
+                import into your Mastodon account.
+                <a style="display: none" id="csvLink" href="/downloadFollowableCSV">Click Here to download the CSV
+                    file</a>
+            </p>
+        </section>
+        <section class="main__info">
+            <p>
+                Important information about how your data is handled is
+                available in the <a href="privacy.html">Privacy Policy</a>.
+            </p>
+            <br />
+            <p>
+                To revoke access to Twitter, use the button that appears
+                when you are successfully logged into Twitodon with your
+                Twitter account. Your login session has a time limit,
+                though, so the buttons will not appear until you refresh
+                your session by logging in again. When visible, clicking the
+                Revoke button will completely dissacotiate Twitodon from
+                your Twitter account. (Unfortunately Mastodon doesn't
+                provide Twitodon the ability to revoke access, but you can
+                still logout. To completely revoke access you need to
+                navigate to your Mastodon instance, login and go to your
+                settings/preferences page, select "account" followed by
+                "authorized apps", find the Twitodon app and click the
+                revoke button on the entry.)
+            </p>
+        </section>
+        <section class="main__info">
+            <details>
+                <summary class="bolded">
+                    Instructions for importing the CSV into your Mastodon
+                    instance
+                </summary>
+                <ol>
+                    <li>
+                        <p>
+                            Navigate to your Mastodon instance's import
+                            page:
+                            <a id="mastodonImportLink"
+                                href="https://mastodon.social/settings/import">https://mastodon.social/settings/import</a>
+                        </p>
+                        <p class="centered">
+                            <img src="img/import-screen.png"
+                                title="A screenshot showing the import following list for a Mastodon account" />
+                        </p>
+                    </li>
+                    <li>
+                        Click the browse button and select the file
+                        <code>new_mastodon_follows.csv</code>, that you
+                        downloaded from Twitodon.
+                    </li>
+                    <li>
+                        Ensure that "Merge" is selected as the chosen
+                        strategy or you'll unfollow anyone that isn't in
+                        your CSV file.
+                    </li>
+                    <li>
+                        Finally click the Upload button. This will upload
+                        your CSV and put it into a queue. Your Mastodon
+                        server will process it over the next few hours to a
+                        couple of days.
+                    </li>
+                </ol>
+            </details>
+        </section>
+    </main>
+    <script type="text/javascript">
+        let twitterMe = '',
+            mastodonMe = '',
+            twitterIds = [],
+            mastodonIds = []
 
-				document
-					.getElementById('mastodonForm')
-					.addEventListener('submit', async (e) => {
-						e.preventDefault()
-						if (
-							mastodonHostField.value &&
-							!mastodonLoginButton.hasAttribute('disabled')
-						) {
-							const response = await fetch(
-								`mastodonLoginUrl?mastodonHost=${encodeURIComponent(
-									mastodonHostField.value
-								)}`
-							)
-							if (response.ok) {
-								const json = await response.json()
-								window.location.href = json.mastodonLoginUrl
-							}
-						}
-					})
+        const mastodonHostField =
+            document.getElementById('mastodonHostField'),
+            mastodonLoginButton = document.getElementById('loginToMastodon')
 
-				let twitterToken = document.cookie
-					?.split('; ')
-					?.find((row) => row.startsWith('twitterToken='))
-					?.split('=')[1]
-				let mastodonToken = document.cookie
-					?.split('; ')
-					?.find((row) => row.startsWith('mastodonToken='))
-					?.split('=')[1]
+        async function onLoad() {
+            document
+                .getElementById('twitterLogoutLink')
+                .addEventListener('click', async () => {
+                    const res = await fetch('/twitterDeAuth')
+                    if (res.status === 200) {
+                        window.location.reload()
+                    } else {
+                        alert('Failed to revoke access')
+                    }
+                })
+            document
+                .getElementById('mastodonLogoutLink')
+                .addEventListener('click', async () => {
+                    const res = await fetch('/mastodonDeAuth')
+                    if (res.status === 200) {
+                        window.location.reload()
+                    } else {
+                        alert('Failed to revoke access')
+                    }
+                })
 
-				if (twitterToken) {
-					const response = await fetch('twitterMe')
-					if (response.ok) {
-						twitterMe = await response.text()
-						document
-							.getElementById('twitterLoginLink')
-							.after(` Done. (Logged in as: @${twitterMe})`)
-						document.getElementById(
-							'twitterLoginLink'
-						).style.textDecoration = 'line-through'
-						document
-							.getElementById('loginToMastodon')
-							.removeAttribute('disabled')
-						document
-							.getElementById('loginToMastodon')
-							.classList.remove('btn__disabled')
-						document
-							.getElementById('loginToMastodon')
-							.classList.add('btn__filled')
-						document.getElementById(
-							'twitterLogoutLink'
-						).style.display = 'inline'
-					} else {
-						twitterToken = null
-					}
-				}
+            document
+                .getElementById('mastodonForm')
+                .addEventListener('submit', async (e) => {
+                    e.preventDefault()
+                    if (
+                        mastodonHostField.value &&
+                        !mastodonLoginButton.hasAttribute('disabled')
+                    ) {
+                        const response = await fetch(
+                            `mastodonLoginUrl?mastodonHost=${encodeURIComponent(
+                                mastodonHostField.value
+                            )}`
+                        )
+                        if (response.ok) {
+                            const json = await response.json()
+                            window.location.href = json.mastodonLoginUrl
+                        }
+                    }
+                })
 
-				if (!twitterToken) {
-					const response = await fetch('twitterLoginUrl')
-					if (response.ok) {
-						const json = await response.json()
-						document
-							.getElementById('twitterLoginLink')
-							.setAttribute('href', json.twitterLoginUrl)
-					}
-				}
+            let twitterToken = document.cookie
+                ?.split('; ')
+                ?.find((row) => row.startsWith('twitterToken='))
+                ?.split('=')[1]
+            let mastodonToken = document.cookie
+                ?.split('; ')
+                ?.find((row) => row.startsWith('mastodonToken='))
+                ?.split('=')[1]
 
-				if (mastodonToken) {
-					const response = await fetch('mastodonMe')
-					if (response.ok) {
-						mastodonMe = await response.text()
-						const mastodonHost = decodeURIComponent(
-							document.cookie
-								?.split('; ')
-								?.find((row) => row.startsWith('mastodonHost='))
-								?.split('=')[1]
-						)?.replace(/^https?:\/\/([^/]+)\/.*$/i, '$1')
-						document.getElementById('mastodonForm').style.display =
-							'none'
-						document.getElementById(
-							'mastodonFormParagraph'
-						).style.display = 'none'
-						document.getElementById(
-							'mastodonLoginText'
-						).style.textDecoration = 'line-through'
-						document
-							.getElementById('mastodonLoginText')
-							.after(
-								` Done. (Logged in as: @${mastodonMe}@${mastodonHost})`
-							)
-						document.getElementById(
-							'mastodonLogoutLink'
-						).style.display = 'inline'
+            if (twitterToken) {
+                const response = await fetch('twitterMe')
+                if (response.ok) {
+                    twitterMe = await response.text()
+                    document
+                        .getElementById('twitterLoginLink')
+                        .after(` Done. (Logged in as: @${twitterMe})`)
+                    document.getElementById(
+                        'twitterLoginLink'
+                    ).style.textDecoration = 'line-through'
+                    document
+                        .getElementById('loginToMastodon')
+                        .removeAttribute('disabled')
+                    document
+                        .getElementById('loginToMastodon')
+                        .classList.remove('btn__disabled')
+                    document
+                        .getElementById('loginToMastodon')
+                        .classList.add('btn__filled')
+                    document.getElementById(
+                        'twitterLogoutLink'
+                    ).style.display = 'inline'
+                } else {
+                    twitterToken = null
+                }
+            }
 
-						const mastodonImportUrl = `https://${mastodonHost}/settings/import`
-						document.getElementById(
-							'mastodonImportLink'
-						).textContent = mastodonImportUrl
-						document
-							.getElementById('mastodonImportLink')
-							.setAttribute('href', mastodonImportUrl)
-					} else {
-						mastodonToken = null
-					}
-				}
+            if (!twitterToken) {
+                const response = await fetch('twitterLoginUrl')
+                if (response.ok) {
+                    const json = await response.json()
+                    document
+                        .getElementById('twitterLoginLink')
+                        .setAttribute('href', json.twitterLoginUrl)
+                }
+            }
 
-				if (mastodonToken && twitterToken) {
-					const scanProgressCount =
-						document.getElementById('scanProgressCount')
-					const twitterFollowingCount = document.getElementById(
-						'twitterFollowingCount'
-					)
-					const matchedMastodonUsers = document.getElementById(
-						'matchedMastodonUsers'
-					)
+            if (mastodonToken) {
+                const response = await fetch('mastodonMe')
+                if (response.ok) {
+                    mastodonMe = await response.text()
+                    const mastodonHost = decodeURIComponent(
+                        document.cookie
+                            ?.split('; ')
+                            ?.find((row) => row.startsWith('mastodonHost='))
+                            ?.split('=')[1]
+                    )?.replace(/^https?:\/\/([^/]+)\/.*$/i, '$1')
+                    document.getElementById('mastodonForm').style.display =
+                        'none'
+                    document.getElementById(
+                        'mastodonFormParagraph'
+                    ).style.display = 'none'
+                    document.getElementById(
+                        'mastodonLoginText'
+                    ).style.textDecoration = 'line-through'
+                    document
+                        .getElementById('mastodonLoginText')
+                        .after(
+                            ` Done. (Logged in as: @${mastodonMe}@${mastodonHost})`
+                        )
+                    document.getElementById(
+                        'mastodonLogoutLink'
+                    ).style.display = 'inline'
 
-					try {
-						await fetch('addOrUpdateTwitterToMastodonMapping')
-						const response = await fetch('followingOnTwitter')
-						if (response.ok) {
-							twitterIds = await response.json()
-						}
-						twitterFollowingCount.innerText = twitterIds.length
-					} catch (e) {
-						console.error(e)
-					}
+                    const mastodonImportUrl = `https://${mastodonHost}/settings/import`
+                    document.getElementById(
+                        'mastodonImportLink'
+                    ).textContent = mastodonImportUrl
+                    document
+                        .getElementById('mastodonImportLink')
+                        .setAttribute('href', mastodonImportUrl)
+                } else {
+                    mastodonToken = null
+                }
+            }
 
-					let progress = 1
-					for (const { id } of twitterIds) {
-						try {
-							const response = await fetch(
-								'matchTwitterUserToMastodon',
-								{
-									method: 'POST',
-									body: id,
-								}
-							)
-							if (response.ok) {
-								const mastodonId = await response.text()
-								if (mastodonId) {
-									mastodonIds.push(mastodonId)
-								}
-							}
-						} finally {
-							scanProgressCount.innerText = progress++
-							matchedMastodonUsers.innerText = mastodonIds.length
-						}
-					}
+            if (mastodonToken && twitterToken) {
+                const scanProgressCount =
+                    document.getElementById('scanProgressCount')
+                const twitterFollowingCount = document.getElementById(
+                    'twitterFollowingCount'
+                )
+                const matchedMastodonUsers = document.getElementById(
+                    'matchedMastodonUsers'
+                )
 
-					const csvContent =
-						'data:text/csv;charset=utf-8,Account address,Show boosts\n' +
-						mastodonIds.map((user) => `${user},true`).join('\n')
-					const csvURI = (encodedUri = encodeURI(csvContent))
+                try {
+                    await fetch('addOrUpdateTwitterToMastodonMapping')
+                    const response = await fetch('followingOnTwitter')
+                    if (response.ok) {
+                        twitterIds = await response.json()
+                    }
+                    twitterFollowingCount.innerText = twitterIds.length
+                } catch (e) {
+                    console.error(e)
+                }
 
-					const csvLink = document.getElementById('csvLink')
-					csvLink.setAttribute('href', csvURI)
-					csvLink.setAttribute('download', 'new_mastodon_follows.csv')
-					csvLink.style.display = 'block'
-				}
-			}
-			onLoad()
-		</script>
-	</body>
+                let progress = 1
+                for (const { id } of twitterIds) {
+                    try {
+                        const response = await fetch(
+                            'matchTwitterUserToMastodon',
+                            {
+                                method: 'POST',
+                                body: id,
+                            }
+                        )
+                        if (response.ok) {
+                            const mastodonId = await response.text()
+                            if (mastodonId) {
+                                mastodonIds.push(mastodonId)
+                            }
+                        }
+                    } finally {
+                        scanProgressCount.innerText = progress++
+                        matchedMastodonUsers.innerText = mastodonIds.length
+                    }
+                }
+
+                const csvContent =
+                    'data:text/csv;charset=utf-8,Account address,Show boosts\n' +
+                    mastodonIds.map((user) => `${user},true`).join('\n')
+                const csvURI = (encodedUri = encodeURI(csvContent))
+
+                const csvLink = document.getElementById('csvLink')
+                csvLink.setAttribute('href', csvURI)
+                csvLink.setAttribute('download', 'new_mastodon_follows.csv')
+                csvLink.style.display = 'block'
+            }
+        }
+        onLoad()
+    </script>
+</body>
+
 </html>
