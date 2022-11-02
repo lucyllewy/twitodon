@@ -48,24 +48,37 @@
     <body>
         <div class="centered">
             <h1>Twitodon</h1>
-            <h2>Find your Twitter friends on Mastodon</h2>
+            <h2>Find and follow your Twitter friends on Mastodon</h2>
             <iframe src="https://github.com/sponsors/diddledani/button" title="Sponsor diddledani" height="35" width="116" style="border: 0;"></iframe>
         </div>
         <div>
-            <p>When you login to Twitodon with both your Twitter and Mastodon accounts it will memorise the association between your two accounts. Twitodon will then match any Twitter users you follow that have previously loged into Twitodon thereby providing their own association information. Unfortunately, there is no way of discovering, or guessing, Twitter users on Mastodon without them logging into Twitodon previously. Because of this, it is recommended to check back again regularly to keep up to date as more users use Twitodon.</p>
-            <p id="twitterLoginParagraph">Step 1. <a id="twitterLoginLink">Login With Twitter</a>. <button id="twitterLogoutLink" style="display: none">Logout and revoke access</button></p>
-            <p id="mastodonLoginParagraph">Step 2. <span id="mastodonLoginText">Login With Mastodon</span>. <button id="mastodonLogoutLink" style="display: none">Logout</button></p>
-            <p id="mastodonFormParagraph">Enter your Mastodon host's web address:</p>
+	    <h3>How Twitodon Works</h3>
+	    <p>Click the buttons below to give Twitodon access to your Twitter and Mastodon accounts. Don't worry, we won't be able to see your passwords - we use a secure, open standard called <a href="https://en.wikipedia.org/wiki/OAuth">OAuth</a> that provides a safe way for 3rd parties like Twitodon access to website information without divulging user passwords.</p>
+	    <p>Twitodon will scan your Twitter "following" list, checking to see if any of those accounts have also used this service. If they have used this service they will have linked their Twitter account to their Mastodon account, and you'll get their Mastodon information in a nice file that you can upload.</p>
+	    <p>Unfortunately, there is no way of matching Twitter accounts to Mastodon accounts unless they have logged into Twitodon previously. Because of this, we recommended you check back with us regularly to keep up-to-date as more people join the fediverse.</p>
+            <p>Information about how your data is handled is available in the <a href="privacy.html">Privacy Policy</a>.</p>
+	    <h3>Get Started</h3>
+
+	    <p id="twitterLoginParagraph"><b>Step 1.</b> <a id="twitterLoginLink">Login With Twitter</a>. <button id="twitterLogoutLink" style="display: none">Logout and revoke access</button></p>
+	    <p id="mastodonLoginParagraph"><b>Step 2.</b> <span id="mastodonLoginText">Login With Mastodon by entering your Mastodon host's web address: </span> <button id="mastodonLogoutLink" style="display: none">Logout</button></p>
+
+            <p id="mastodonFormParagraph"></p>
             <form method="get" id="mastodonForm">
                 <input type="text" placeholder="https://mastodon.social/" id="mastodonHostField" />
                 <input type="submit" disabled id="loginToMastodon" value="Login" />
             </form>
-            <p>Looking for Mastodon users progress, scanned <span id="scanProgressCount">0</span> of <span id="twitterFollowingCount">0</span> users you follow on Twitter. Discovered <span id="matchedMastodonUsers">0</span> Twitter users on Mastodon who have previously linked their Twitter and Mastodon accounts by logging into Twitodon.</p>
-            <p>Step 3. Download matching users in CSV format to import into your Mastodon account. <a style="display: none" id="csvLink" href="/downloadFollowableCSV">Click Here to download the CSV file</a></p>
 
-            <p>Important information about how your data is handled is available in the <a href="privacy.html">Privacy Policy</a>.</p>
-            <p>To revoke access to Twitter, use the button that appears when you are successfully logged into Twitodon with your Twitter account. Your login session has a time limit, though, so the buttons will not appear until you refresh your session by logging in again. When visible, clicking the Revoke button will completely disassociate Twitodon from your Twitter account. (Unfortunately Mastodon doesn't provide Twitodon the ability to revoke access, but you can still logout. To completely revoke access you need to navigate to your Mastodon instance, login and go to your settings/preferences page, select "account" followed by "authorized apps", find the Twitodon app and click the revoke button on the entry.)</p>
+            <p>We have scanned <span id="scanProgressCount">0</span> of <span id="twitterFollowingCount">0</span> users you follow on Twitter and discovered <span id="matchedMastodonUsers">0</span> Twitter users on Mastodon who have previously linked their Twitter and Mastodon accounts.</p>
 
+	    <p><b>Step 3.</b> Download matching users in CSV format to import into your Mastodon account. <a style="display: none" id="csvLink" href="/downloadFollowableCSV">Click Here to download the CSV file</a></p>
+
+	    <p><b>Step 4 (optional).</b> Revoke our access to Twitter and Mastodon.</p>
+	    <ul>
+	        <li>Twitter: Use the button that appears when you are successfully logged into Twitodon with your Twitter account. Your login session has a time limit, so the buttons will not appear until you refresh your session by logging in again. When visible, click the Revoke button to disassociate Twitodon from your Twitter account.</li>
+	        <li>Mastodon: Unfortunately, Mastodon doesn't provide Twitodon the ability to revoke access, but you can still logout. To completely revoke access navigate to your Mastodon instance, log in, and go to your settings/preferences page, select "account" followed by "authorized apps", find the Twitodon app and click the revoke button.</li>
+	    </ul>
+
+	    <p><b>Step 5.</b></p>
             <details>
                 <summary>Instructions for importing the CSV into your Mastodon instance</summary>
                 <ol>
