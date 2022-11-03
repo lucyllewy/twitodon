@@ -19,7 +19,8 @@ function getMastodonApp(mastodonDomain) {
  * @returns Promise<string>
  */
 async function createMastodonApp(mastodonHost, mastodonDomain, redirectUri) {
-    const response = await fetch(`${mastodonHost}/api/v1/apps`, {
+    const url = new URL('/api/v1/apps', mastodonHost)
+    const response = await fetch(url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -65,11 +66,21 @@ async function getOrCreateMastodonApp(mastodonHost, mastodonDomain, redirectUri)
  * @returns void
  */
 export async function mastodonLoginUrl(request, reply) {
-    const mastodonHost = new URL(request.query.mastodonHost)
-    const mastodonDomain = (new URL(mastodonHost)).hostname
-    const redirectUri = new URL(`${request.protocol}://${request.hostname}/mastodonAuth`)
+    let tempMastodonHost = request.query.mastodonHost
+    if (!/^https?:\/\//.test(tempMastodonHost)) {
+        tempMastodonHost = `https://${tempMastodonHost.replace(/^.*:([/]{2})?/, '')}`
+    }
+    const mastodonHost = new URL(tempMastodonHost)
+    mastodonHost.pathname = ''
+    const redirectUri = new URL('/mastodonAuth', `${request.protocol}://${request.hostname}/`)
 
-    const client_id = await getOrCreateMastodonApp.call(this, mastodonHost.href, mastodonDomain, redirectUri.href)
+    const client_id = await getOrCreateMastodonApp.call(this, mastodonHost.href, mastodonHost.hostname, redirectUri.href)
+
+    const mastodonLoginUrl = new URL('/oauth/authorize', mastodonHost.href)
+    mastodonLoginUrl.searchParams.set('response_type', 'code')
+    mastodonLoginUrl.searchParams.set('client_id', client_id)
+    mastodonLoginUrl.searchParams.set('redirect_uri', redirectUri.href)
+    mastodonLoginUrl.searchParams.set('scope', scopes)
 
     reply
         .setCookie(mastodonHostCookieName, mastodonHost.href, {
@@ -78,7 +89,7 @@ export async function mastodonLoginUrl(request, reply) {
             sameSite: 'lax',
         })
         .send({
-            mastodonLoginUrl: `${mastodonHost.href}/oauth/authorize?response_type=code&client_id=${client_id}&redirect_uri=${encodeURIComponent(redirectUri.href)}&scope=${scopes}`
+            mastodonLoginUrl: mastodonLoginUrl.href,
         })
 }
 
@@ -94,7 +105,7 @@ export async function mastodonAuth(request, reply) {
     }
 
     const mastodonDomain = (new URL(mastodonHost.value)).hostname
-    const redirectUri = new URL(`${request.protocol}://${request.hostname}/mastodonAuth`)
+    const redirectUri = new URL('/mastodonAuth', `${request.protocol}://${request.hostname}/`)
 
     const {client_id, client_secret} = await getMastodonApp.call(this, mastodonDomain)
 
@@ -109,7 +120,8 @@ export async function mastodonAuth(request, reply) {
                 `&redirect_uri=${encodeURIComponent(redirectUri.href)}` +
                 `&scope=${encodeURIComponent(scopes)}`
 
-    const oauthData = await fetch(`${mastodonHost.value}/oauth/token`, {
+    const url = new URL('/oauth/token', mastodonHost.value)
+    const oauthData = await fetch(url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -158,7 +170,8 @@ export async function mastodonDeAuth(request, reply) {
                 `&client_secret=${encodeURIComponent(client_secret)}` +
                 `&token=${encodeURIComponent(tokenCookie.value)}`
 
-    const res = await fetch(`${hostCookie.value}/oauth/revoke`, {
+    const url = new URL('/oauth/revoke', hostCookie.value)
+    const res = await fetch(url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -174,7 +187,7 @@ export async function mastodonDeAuth(request, reply) {
 }
 
 export async function meHandler(host, token) {
-    const url = `${host}/api/v1/accounts/verify_credentials`
+    const url = new URL('/api/v1/accounts/verify_credentials', host)
     const response = await fetch(url, {
         headers: {
             Authorization: `Bearer ${token}`,

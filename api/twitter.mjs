@@ -13,7 +13,7 @@ const client_id = process.env.TWITTER_CLIENT_ID
 export async function twitterLoginUrl(request, reply) {
     const id = randomBytes(32).toString('hex')
     const challenge = randomBytes(32).toString('hex')
-    const redirectUri = new URL(`${request.protocol}://${request.hostname}/twitterAuth`)
+    const redirectUri = new URL('/twitterAuth', `${request.protocol}://${request.hostname}/`)
 
     await this.mongo.db.collection('twitter_user_tokens').insertOne({
         _id: id,
@@ -21,8 +21,17 @@ export async function twitterLoginUrl(request, reply) {
         CreatedDate: new Date(),
     })
 
+    const twitterLoginUrl = new URL('/i/oauth2/authorize', 'https://twitter.com/')
+    twitterLoginUrl.searchParams.set('response_type', 'code')
+    twitterLoginUrl.searchParams.set('client_id', client_id)
+    twitterLoginUrl.searchParams.set('redirect_uri', redirectUri.href)
+    twitterLoginUrl.searchParams.set('state', id)
+    twitterLoginUrl.searchParams.set('scope', 'tweet.read users.read follows.read')
+    twitterLoginUrl.searchParams.set('code_challenge', challenge)
+    twitterLoginUrl.searchParams.set('code_challenge_method', 'plain')
+
     reply.send({
-        twitterLoginUrl: `https://twitter.com/i/oauth2/authorize?response_type=code&client_id=${client_id}&redirect_uri=${encodeURIComponent(redirectUri.href)}&scope=tweet.read%20users.read%20follows.read&state=${id}&code_challenge=${challenge}&code_challenge_method=plain`
+        twitterLoginUrl: twitterLoginUrl.href
     })
 }
 
@@ -34,7 +43,7 @@ export async function twitterLoginUrl(request, reply) {
 export async function twitterAuth(request, reply) {
     const id = request.query.state
     const {challenge} = await this.mongo.db.collection('twitter_user_tokens').findOne({ _id: id })
-    const redirectUri = new URL(`${request.protocol}://${request.hostname}/twitterAuth`)
+    const redirectUri = new URL('/twitterAuth', `${request.protocol}://${request.hostname}/`)
 
     const body = `code=${encodeURIComponent(request.query.code)}` +
                 '&grant_type=authorization_code' +
@@ -54,7 +63,6 @@ export async function twitterAuth(request, reply) {
 
     if (oauthData.status !== 200) {
         return reply.send(json)
-        return reply.code(oauthData.status).clearCookie(twitterTokenCookieName).send()
     }
 
     if (!'expires_in' in json || !json.expires_in || json.expires_in <= 0) {
@@ -144,8 +152,12 @@ export async function followingOnTwitter(request, reply) {
     let nextToken = '';
     const users = []
     while (true) {
-        const response = await fetch(
-            `https://api.twitter.com/2/users/${userId}/following?max_results=1000${nextToken}`,
+        const url = new URL(`/2/users/${userId}/following`, 'https://api.twitter.com/')
+        url.searchParams.set('max_results', 1000)
+        if (nextToken) {
+            url.searchParams.set('pagination_token', nextToken)
+        }
+        const response = await fetch(url,
             { headers: { Authorization: `Bearer ${token.value}` } }
         )
         if (!response.ok) {
@@ -164,7 +176,7 @@ export async function followingOnTwitter(request, reply) {
         if (!json.meta.next_token) {
             break
         }
-        nextToken = `&pagination_token=${json.meta.next_token}`
+        nextToken = json.meta.next_token
     }
 
     reply.send(users.flat(1))
