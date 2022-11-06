@@ -92,6 +92,8 @@
                 </ol>
             </details>
         </div>
+        <p id="twitterToMastodonDeleteLinkParagraph"><b>Step 6. (optional)</b> <span id="mastodonDeletionText">If you no longer wish for your mastodon account to show up when people search for people to follow: </span> <button id="deleteTwitterToMastodonLink" style="display: none">Delete the link and no longer show up</button></p>
+
 
         <a class="github-fork-ribbon" href="https://github.com/diddledani/twitodon" data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a>
 
@@ -119,6 +121,16 @@
                         window.location.reload()
                     } else {
                         alert('Failed to revoke access')
+                    }
+                })
+
+
+                document.getElementById('deleteTwitterToMastodonLink').addEventListener('click', async () => {
+                    const res = await fetch('/deleteTwitterToMastodonLink')
+                    if (res.status === 200) {
+                        window.location.reload()
+                    } else {
+                        alert('Failed to delete the twitter to mastodon link')
                     }
                 })
 
