@@ -24,7 +24,7 @@ import {
 import {
     addOrUpdateTwitterToMastodonMapping,
     matchTwitterUserToMastodon,
-    deleteTwitterToMastodonLink,
+    removeTwitterToMastodonMapping,
 } from './api/user-matching.mjs'
 
 const __filename = fileURLToPath(import.meta.url);
@@ -63,7 +63,7 @@ app.get('/twitterMe', twitterMe)
 app.get('/mastodonLoginUrl', mastodonLoginUrl)
 app.get('/mastodonAuth', mastodonAuth)
 app.get('/mastodonDeAuth', mastodonDeAuth)
-app.get('/deleteTwitterToMastodonLink', deleteTwitterToMastodonLink)
+app.get('/deleteTwitterToMastodonLink', removeTwitterToMastodonMapping)
 app.get('/mastodonMe', mastodonMe)
 app.get('/followingOnTwitter', followingOnTwitter)
 app.get('/addOrUpdateTwitterToMastodonMapping', addOrUpdateTwitterToMastodonMapping)
