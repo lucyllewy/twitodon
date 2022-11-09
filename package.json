@@ -4,7 +4,7 @@
   "description": "Twitter to Mastodon account mapping service to aid migration away from Twitter without losing all your followed friends",
   "main": "index.mjs",
   "author": "Dani Llewellyn (diddledani)",
-  "license": "MIT",
+  "license": "GPL3-or-Later",
   "private": "true",
   "dependencies": {
     "@fastify/cookie": "^8.1.0",
