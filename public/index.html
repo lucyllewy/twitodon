@@ -59,13 +59,13 @@
             <p>Information about how your data is handled is available in the <a href="privacy.html">Privacy Policy</a>.</p>
 	    <h3>Get Started</h3>
 
-	    <p id="twitterLoginParagraph"><b>Step 1.</b> <a id="twitterLoginLink">Login With Twitter</a>. <button id="twitterLogoutLink" style="display: none">Logout and revoke access</button></p>
-	    <p id="mastodonLoginParagraph"><b>Step 2.</b> <span id="mastodonLoginText">Login With Mastodon by entering your Mastodon host's web address: </span> <button id="mastodonLogoutLink" style="display: none">Logout</button></p>
+	    <p id="twitterLoginParagraph"><b>Step 1.</b> <a id="twitterLoginLink">Sign in with Twitter</a>. <button id="twitterLogoutLink" style="display: none">Logout and revoke access</button></p>
+	    <p id="mastodonLoginParagraph"><b>Step 2.</b> <span id="mastodonLoginText">Sign in with Mastodon by entering your Mastodon host's web address: </span> <button id="mastodonLogoutLink" style="display: none">Logout</button></p>
 
             <p id="mastodonFormParagraph"></p>
             <form method="get" id="mastodonForm">
                 <input type="text" placeholder="https://mastodon.social/" id="mastodonHostField" />
-                <input type="submit" disabled id="loginToMastodon" value="Login" />
+                <input type="submit" disabled id="loginToMastodon" value="Sign in" />
             </form>
 
             <p>We have scanned <span id="scanProgressCount">0</span> of <span id="twitterFollowingCount">0</span> users you follow on Twitter and discovered <span id="matchedMastodonUsers">0</span> Twitter users on Mastodon who have previously linked their Twitter and Mastodon accounts.</p>
@@ -80,7 +80,7 @@
 
 	    <p><b>Step 5.</b></p>
             <details>
-                <summary>Instructions for importing the CSV into your Mastodon instance</summary>
+                <summary>Finally, import the CSV into your Mastodon account:</summary>
                 <ol>
                     <li>
                         <p>Navigate to your Mastodon instance's import page: <a id="mastodonImportLink" href="https://mastodon.social/settings/import">https://mastodon.social/settings/import</a></p>
