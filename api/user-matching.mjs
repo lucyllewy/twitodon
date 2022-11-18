@@ -42,6 +42,27 @@ export async function addOrUpdateTwitterToMastodonMapping(request, reply) {
  * @param {import('fastify').FastifyReply} reply 
  * @returns void
  */
+ export async function removeTwitterToMastodonMapping(request, reply) {
+    const twitterToken = request.unsignCookie(request.cookies[twitterTokenCookieName])
+
+    if (!twitterToken.valid) {
+        throw new Error('No Twitter Authorization Token cookie')
+    }
+
+    const { data: { id: twitter_id } } = await twitterMe(twitterToken.value)
+
+    await this.mongo.db.collection('twitter_to_mastodon_usermap').deleteOne({
+        _id: twitter_id,
+    })
+
+    reply.send()
+}
+
+/**
+ * @param {import('fastify').FastifyRequest} request 
+ * @param {import('fastify').FastifyReply} reply 
+ * @returns void
+ */
 export async function matchTwitterUserToMastodon(request, reply) {
     const mastodonToken = request.unsignCookie(request.cookies[mastodonTokenCookieName])
     const mastodonHost = request.unsignCookie(request.cookies[mastodonHostCookieName])
