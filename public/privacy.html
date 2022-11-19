@@ -1,17 +1,11 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
     <head>
-        <link rel="icon" type="image/x-icon" href="favicon.ico">
-        <link href="https://fonts.googleapis.com/css?family=Pacifico&display=swap" rel="stylesheet">
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" rel="stylesheet">
+        <link rel="icon" type="image/x-icon" href="favicon.ico" />
+        <link href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css?family=Pacifico&display=swap" rel="stylesheet" />
         <link href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" rel="stylesheet" />
         <style>
-            body {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            }
-
             h1 {
                 font-family: Pacifico, sans-serif;
                 font-size: 4em;
@@ -19,36 +13,35 @@
                 margin: 0;
             }
 
-            h2 {
-                font-weight: 300;
-                font-family: sans-serif;
-            }
-
-            div {
-                width: 90vw;
+            body {
                 max-width: 640px;
+                margin: auto;
             }
 
             .centered {
                 text-align: center;
             }
 
-            #ferris {
-                width: 75%;
+            .github-fork-ribbon:before {
+                background-color: hotpink;
             }
-
-            .github-fork-ribbon:before { background-color: hotpink; }
         </style>
         <title>Twitodon - Find your Twitter friends on Mastodon</title>
     </head>
     <body>
-        <div class="centered">
+        <header class="centered">
             <h1>Twitodon</h1>
-            <h2>Find your Twitter friends on Mastodon</h2>
-            <iframe src="https://github.com/sponsors/diddledani/button" title="Sponsor diddledani" height="35" width="116" style="border: 0;"></iframe>
+            <h2>Find and follow your Twitter friends on Mastodon</h2>
+            <iframe
+                src="https://github.com/sponsors/diddledani/button"
+                title="Sponsor diddledani"
+                height="35"
+                width="116"
+                style="border: 0"
+            ></iframe>
             <h3>Twitodon privacy policy</h3>
-        </div>
-        <div>
+        </header>
+        <main>
             <p>
                 This service collects <em>only</em> your twitter ID and your Mastodon Username and
                 instance domain name. These are saved in the database to providing a link between
@@ -70,6 +63,6 @@
                 Twitodon does not utilise any analytics or advertising cookies, and does not sell any
                 data nor make any data available to third parties.
             </p>
-        </div>
+        </main>
     </body>
 </html>

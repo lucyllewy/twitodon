@@ -1,17 +1,11 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
     <head>
-        <link rel="icon" type="image/x-icon" href="favicon.ico">
-        <link href="https://fonts.googleapis.com/css?family=Pacifico&display=swap" rel="stylesheet">
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" rel="stylesheet">
+        <link rel="icon" type="image/x-icon" href="favicon.ico" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css" />
+        <link href="https://fonts.googleapis.com/css?family=Pacifico&display=swap" rel="stylesheet" />
         <link href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" rel="stylesheet" />
         <style>
-            body {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            }
-
             h1 {
                 font-family: Pacifico, sans-serif;
                 font-size: 4em;
@@ -19,39 +13,34 @@
                 margin: 0;
             }
 
-            h2 {
-                font-weight: 300;
-                font-family: sans-serif;
-            }
-
-            div {
-                width: 90vw;
+            body {
                 max-width: 640px;
-            }
-
-            details > summary {
-                cursor: pointer;
+                margin: auto;
             }
 
             .centered {
                 text-align: center;
             }
 
-            #ferris {
-                width: 75%;
+            .github-fork-ribbon:before {
+                background-color: hotpink;
             }
-
-            .github-fork-ribbon:before { background-color: hotpink; }
         </style>
         <title>Twitodon - Find your Twitter friends on Mastodon</title>
     </head>
     <body>
-        <div class="centered">
+        <header class="centered">
             <h1>Twitodon</h1>
             <h2>Find and follow your Twitter friends on Mastodon</h2>
-            <iframe src="https://github.com/sponsors/diddledani/button" title="Sponsor diddledani" height="35" width="116" style="border: 0;"></iframe>
-        </div>
-        <div>
+            <iframe
+                src="https://github.com/sponsors/diddledani/button"
+                title="Sponsor diddledani"
+                height="35"
+                width="116"
+                style="border: 0"
+            ></iframe>
+        </header>
+        <main>
 	    <h3>How Twitodon Works</h3>
 	    <p>Click the buttons below to give Twitodon access to your Twitter and Mastodon accounts. Don't worry, we won't be able to see your passwords - we use a secure, open standard called <a href="https://en.wikipedia.org/wiki/OAuth">OAuth</a> that provides a safe way for 3rd parties like Twitodon access to website information without divulging user passwords.</p>
 	    <p>Twitodon will scan your Twitter "following" list, checking to see if any of those accounts have also used this service. If they have used this service they will have linked their Twitter account to their Mastodon account, and you'll get their Mastodon information in a nice file that you can upload.</p>
@@ -91,7 +80,7 @@
                     <li>Finally click the Upload button. This will upload your CSV and put it into a queue. Your Mastodon server will process it over the next few hours to a couple of days.</li>
                 </ol>
             </details>
-        </div>
+        </main>
 
         <a class="github-fork-ribbon" href="https://github.com/diddledani/twitodon" data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a>
 
